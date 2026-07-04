@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Innermost</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+button{pointer-events:auto;cursor:pointer;touch-action:manipulation;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --cream:#f5f0e8;--cream2:#ede7d9;--cream3:#ddd5c4;
+  --brown:#3d2810;--brown2:#6b4c1e;--gold:#c49a3c;--gold2:#d4aa52;
+  --babyblue:#5a9ab8;
+  --text:#1a0f00;--mid:#3d2810;--dim:#7a5a3a;--blue:#4a7bb5;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+}
+html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-weight:400;overflow:hidden;}
+#app{position:fixed;inset:0;max-width:430px;margin:0 auto;background:#1a0f00;display:flex;flex-direction:column;overflow:hidden;}
+.view{position:absolute;inset:0;display:none;flex-direction:column;}
+.view.show{display:flex;flex-direction:column;}
+.view.show *{pointer-events:auto;}
+
+/* ONBOARD */
+.ob{background:#f8f6f3;overflow-y:auto;}
+.ob-inner{padding:28px 24px;display:flex;flex-direction:column;flex:1;}
+.ob-tag{font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.ob-h{font-family:var(--serif);font-weight:600;font-size:clamp(1.7rem,6.5vw,2.2rem);line-height:1.15;color:var(--brown);margin-bottom:8px;}
+.ob-p{font-size:0.8rem;color:var(--mid);line-height:1.65;margin-bottom:24px;}
+.vcards{display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
+.vcard{background:white;border:1.5px solid var(--cream3);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color 0.15s,background 0.15s;}
+.vcard.on{border-color:var(--gold);background:#fdf8f0;}
+.vplay{width:34px;height:34px;border-radius:50%;background:var(--cream2);border:none;cursor:pointer;font-size:0.95rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;pointer-events:auto;}
+.vcard.on .vplay{background:var(--gold);}
+.vplay.playing{background:#3d7a94;color:white;}
+.vn{font-size:0.88rem;color:var(--text);}
+.vd{font-size:0.7rem;color:var(--mid);margin-top:2px;}
+.ogrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px;}
+.otile{background:white;border:1.5px solid var(--cream3);border-radius:11px;padding:16px 14px;cursor:pointer;transition:border-color 0.15s,background 0.15s;}
+.otile.on{border-color:var(--gold);background:#fdf8f0;}
+.otn{font-size:0.88rem;color:var(--text);}
+.ots{font-size:0.7rem;color:var(--mid);margin-top:3px;}
+.olist{display:flex;flex-direction:column;gap:9px;margin-bottom:12px;}
+.orow{background:white;border:1.5px solid var(--cream3);border-radius:11px;padding:16px 18px;cursor:pointer;transition:border-color 0.15s,background 0.15s;}
+.orow.on{border-color:var(--gold);background:#fdf8f0;}
+.orn{font-size:0.88rem;color:var(--text);}
+.ors{font-size:0.7rem;color:var(--mid);margin-top:3px;}
+.ors.filled{font-weight:600;color:var(--brown);font-size:0.76rem;}
+.email-field{width:100%;padding:15px 16px;border-radius:11px;border:1.5px solid var(--cream3);background:white;font-family:var(--serif);font-size:0.95rem;color:var(--text);outline:none;margin:20px 0;box-sizing:border-box;}
+.email-field:focus{border-color:var(--babyblue);}
+.proto-note{font-size:0.7rem;color:var(--dim);background:var(--cream2);border-radius:8px;padding:10px 14px;margin-bottom:16px;line-height:1.5;}
+.photo-ob{background:#f8f6f3;overflow-y:auto;}
+.photo-inner{padding:28px 24px 48px;display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;}
+.photo-circle{width:180px;height:180px;border-radius:50%;border:2px dashed var(--dim);background:var(--cream2);display:flex;align-items:center;justify-content:center;cursor:pointer;margin:20px auto;overflow:hidden;flex-shrink:0;}
+.photo-circle svg{width:40px;height:40px;stroke:var(--dim);fill:none;stroke-width:1;}
+.photo-circle img{width:100%;height:100%;object-fit:cover;display:none;}
+.photo-tap{font-size:0.72rem;color:var(--dim);margin-bottom:20px;cursor:pointer;}
+.reposition-frame{width:100%;height:160px;border-radius:14px;overflow:hidden;position:relative;background:#f0ece8;border:1px solid #e0dbd4;margin-bottom:10px;touch-action:none;cursor:grab;}
+.reposition-frame:active{cursor:grabbing;}
+#v-reposition .reposition-frame{height:110px;}
+.reposition-frame img{position:absolute;left:0;width:100%;height:auto;max-width:none;pointer-events:none;user-select:none;-webkit-user-select:none;}
+.btn-main{display:block;width:100%;padding:15px;border-radius:10px;background:var(--babyblue);color:white;font-family:var(--sans);font-size:0.82rem;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;border:none;cursor:pointer;text-align:center;pointer-events:auto;touch-action:manipulation;}
+.btn-main:disabled{opacity:0.3;pointer-events:none;}
+.btn-main:active{opacity:0.8;}
+.otile.on{border-color:var(--babyblue);background:#f0f7fb;}
+.orow.on{border-color:var(--babyblue);background:#f0f7fb;}
+.vcard.on{border-color:var(--babyblue);background:#f0f7fb;}
+.btn-skip{display:block;text-align:center;color:var(--dim);font-size:0.76rem;cursor:pointer;margin-top:12px;padding:8px;background:none;border:none;width:100%;pointer-events:auto;}
+
+/* MAIN SCREEN */
+#v-main{background:#ffffff;overflow:hidden;}
+.mhead{padding:9px 18px 7px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--babyblue);}
+.mbrand{display:flex;align-items:center;gap:9px;}
+.mlogo{font-family:var(--serif);font-weight:600;font-size:0.95rem;letter-spacing:0.14em;text-transform:uppercase;color:#f5f0e8;}
+.mlogsub{font-size:0.56rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,240,232,0.6);margin-top:1px;}
+.hright{display:flex;align-items:center;gap:8px;}
+.hphoto{width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid var(--gold2);display:none;flex-shrink:0;}
+.hphoto img{width:100%;height:100%;object-fit:cover;display:block;}
+.icon-btn{background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.3);border-radius:18px;padding:7px 13px;font-size:0.66rem;letter-spacing:0.08em;text-transform:uppercase;color:#f5f0e8;cursor:pointer;pointer-events:auto;}
+
+/* JIGSAW CARD */
+.jig-card{flex-shrink:0;height:160px;margin:10px 16px 0;border-radius:14px;overflow:hidden;position:relative;background:#f0ece6;border:2px solid var(--cream3);}
+#jig-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;display:none;}
+#jig-overlay{position:absolute;inset:0;z-index:2;pointer-events:none;display:none;background:transparent;}
+.jig-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;}
+.jig-empty-grid{width:100%;height:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:2px;padding:2px;}
+.jig-empty-grid div{background:var(--cream3);border-radius:2px;}
+
+/* BODY */
+.mbody{flex:1;display:flex;flex-direction:column;padding:8px 16px 4px;gap:4px;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;background:#ffffff;}
+.mgreet{font-family:var(--serif);font-size:1.3rem;color:var(--brown);text-align:center;flex-shrink:0;font-weight:700;}
+.mood-row{display:flex;gap:5px;justify-content:center;flex-shrink:0;}
+.mbtn{background:white;border:1.5px solid var(--cream3);border-radius:9px;padding:5px 3px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;max-width:62px;opacity:1;transition:all 0.15s;pointer-events:auto;box-shadow:0 2px 4px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06);}
+.mbtn.on{border-color:var(--gold);background:#fdf8f0;opacity:1;transform:scale(1.08);box-shadow:0 2px 8px rgba(196,154,60,0.25);}
+.mbtn .mi{font-size:1rem;}
+.mbtn .ml{font-size:0.48rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--dim);}
+.mbtn.on .ml{color:var(--brown);font-weight:500;}
+.mood-row-compact{display:flex;gap:6px;margin-bottom:12px;}
+.mood-lbl{font-family:var(--serif);font-style:italic;font-size:0.82rem;color:var(--mid);margin-bottom:8px;}
+.mbtn-sm{background:white;border:1.5px solid var(--cream3);border-radius:9px;flex:1;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all 0.15s;pointer-events:auto;}
+.mbtn-sm.err{border-color:#c0554a;background:#fdf1ef;}
+.mood-lbl.err{color:#c0554a;font-weight:600;}
+.mbtn-sm.on{border-color:var(--babyblue);background:#f0f7fb;transform:scale(1.05);}
+.mi-sm{font-size:1.15rem;}
+.ml-sm{font-size:0.46rem;letter-spacing:0.04em;text-transform:uppercase;color:var(--mid);}
+.mbtn-sm.on .ml-sm{color:var(--brown);font-weight:500;}
+.prompt-card{background:#f0ece6;border-radius:10px;padding:10px 14px;flex-shrink:0;border:2px solid var(--cream3);}
+.pc-qt-wrap{position:relative;display:flex;gap:6px;align-items:stretch;margin-top:8px;}
+.pc-qt-scroll{max-height:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;flex:1;scrollbar-width:none;}
+.pc-qt-scroll::-webkit-scrollbar{display:none;}
+.pc-qt-track{width:4px;border-radius:2px;background:#e0d8c8;flex-shrink:0;display:none;position:relative;}
+.q-play-btn{width:40px;height:40px;border-radius:50%;background:var(--babyblue);border:none;color:white;font-size:1rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;align-self:flex-start;pointer-events:auto;}
+.q-play-btn.playing{background:#3d7a94;}
+.pc-qt-track.show{display:block;}
+.pc-qt-thumb{position:absolute;left:0;right:0;border-radius:2px;background:var(--babyblue);top:0;}
+.pc-lbl{font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.pc-qt{font-family:var(--serif);font-size:1.28rem;line-height:1.3;color:var(--brown);font-weight:700;}
+.skip-q{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;margin-top:6px;cursor:pointer;background:rgba(90,154,184,0.18);border:none;padding:0;pointer-events:auto;}
+.skip-q span{font-size:1.05rem;color:var(--babyblue);}
+.input-area{flex-shrink:0;display:flex;flex-direction:column;gap:2px;}
+.mic-row{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.big-mic{width:46px;height:46px;border-radius:50%;background:var(--babyblue);border:none;cursor:pointer;font-size:1.2rem;flex-shrink:0;box-shadow:0 2px 10px rgba(90,154,184,0.4);display:flex;align-items:center;justify-content:center;pointer-events:auto;}
+.big-mic.rec{background:#8b2020;animation:rp 1s infinite;}
+@keyframes rp{0%,100%{box-shadow:0 3px 12px rgba(139,32,32,0.4)}50%{box-shadow:0 3px 20px rgba(139,32,32,0.7)}}
+.mic-info{display:flex;flex-direction:column;gap:2px;}
+.mic-lbl{font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);height:11px;line-height:11px;}
+.mic-sub{font-size:0.66rem;color:var(--dim);}
+.free-note{font-size:0.66rem;color:var(--dim);font-style:italic;flex-shrink:0;}
+.ta-wrap{position:relative;flex-shrink:0;}
+.ans-ta{height:64px;width:100%;background:white;border:1.5px solid var(--cream3);border-radius:10px;padding:10px 60px 10px 14px;font-family:var(--sans);font-size:16px;color:var(--text);outline:none;resize:none;line-height:1.4;}
+.inline-mic{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:var(--babyblue);border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:manipulation;}
+.inline-mic.rec{background:#c0392b;}
+.ans-ta::placeholder{color:var(--dim);font-style:italic;}
+.ans-ta:focus{border-color:var(--gold);}
+.save-btn{width:60%;padding:11px;border-radius:10px;background:var(--babyblue);color:white;font-family:var(--sans);font-size:0.78rem;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;border:none;cursor:pointer;flex-shrink:0;pointer-events:auto;align-self:center;box-shadow:0 3px 12px rgba(90,154,184,0.4);}
+.save-btn:active{opacity:0.8;}
+.bottom-info{flex:1;display:flex;flex-direction:column;justify-content:flex-end;}
+.prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.prog-lbl{font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);}
+.prog-cnt{font-size:0.6rem;color:var(--dim);}
+.prog-bg{height:2px;background:var(--cream3);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+.ob-divider{height:2px;background:var(--cream3);border-radius:2px;margin:auto 24px 20px;flex-shrink:0;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width 0.5s ease;}
+.ask-strip{width:60%;background:#b0bec5;border:none;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;font-family:var(--sans);pointer-events:auto;}
+.ask-strip.open{background:var(--babyblue);box-shadow:0 2px 8px rgba(90,154,184,0.3);}
+.ask-strip-t{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:white;font-weight:500;}
+.ask-strip.open .ask-strip-t{color:white;}
+.ask-hint{font-size:0.58rem;color:var(--dim);text-align:center;margin-top:4px;}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);background:#2d5a72;color:white;padding:14px 24px;border-radius:12px;font-family:var(--serif);font-style:italic;font-size:0.92rem;opacity:0;transition:all 0.3s ease;pointer-events:none;white-space:nowrap;z-index:200;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(45,90,114,0.4);}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+.ask-locked-msg{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.9);background:white;border-radius:16px;padding:24px 28px;text-align:center;z-index:200;opacity:0;pointer-events:none;transition:all 0.25s;max-width:300px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.15);}
+.ask-locked-msg.show{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1);}
+.ask-locked-msg-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:199;opacity:0;pointer-events:none !important;transition:opacity 0.25s;}
+.ask-locked-msg-overlay.show{opacity:1;pointer-events:all !important;}
+.alm-title{font-family:var(--serif);font-size:1.1rem;color:var(--brown);margin-bottom:8px;}
+.alm-text{font-size:0.82rem;color:var(--mid);line-height:1.5;margin-bottom:16px;}
+.alm-btn{background:var(--babyblue);color:white;border:none;border-radius:10px;padding:11px 24px;font-family:var(--sans);font-size:0.78rem;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer;pointer-events:none;box-shadow:0 3px 12px rgba(90,154,184,0.4);}
+.ask-locked-msg.show .alm-btn{pointer-events:auto;}
+.alm-btn-secondary{background:none;color:var(--mid);border:none;padding:10px 20px;font-family:var(--sans);font-size:0.72rem;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer;pointer-events:none;margin-top:8px;display:block;width:100%;}
+.ask-locked-msg.show .alm-btn-secondary{pointer-events:auto;}
+.nav{display:flex;flex-shrink:0;background:rgba(30,15,0,0.9);position:relative;z-index:2;}
+.nbtn{flex:1;padding:10px 0 13px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:0.4;pointer-events:auto;}
+.nbtn.on{opacity:1;}
+.nbtn svg{width:18px;height:18px;stroke:#f5f0e8;fill:none;stroke-width:1.5;}
+.nbtn span{font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:#f5f0e8;}
+#v-settings{background:var(--cream);overflow-y:scroll;-webkit-overflow-scrolling:touch;}
+#v-reposition,#v-feedback{background:var(--cream);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.settings-head{padding:18px 18px 14px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:2px solid var(--babyblue);}
+.settings-title{font-family:var(--serif);font-weight:600;font-size:1.3rem;color:var(--brown);}
+.settings-body{padding:14px 18px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.srow{display:flex;align-items:center;gap:12px;background:white;border:1.5px solid var(--cream3);border-radius:11px;padding:9px 14px;cursor:pointer;pointer-events:auto;}
+.srow-icon{font-size:1.05rem;flex-shrink:0;width:34px;height:34px;border-radius:50%;background:rgba(90,154,184,0.15);display:flex;align-items:center;justify-content:center;text-align:center;}
+.srow-text{flex:1;min-width:0;}
+.srow-label{font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);}
+.srow-val{font-size:0.85rem;color:var(--text);margin-top:2px;}
+.srow-chev{width:16px;height:16px;stroke:var(--babyblue);stroke-width:2;fill:none;flex-shrink:0;}
+.vtoggle{width:44px;height:26px;border-radius:13px;background:var(--cream3);position:relative;flex-shrink:0;transition:background 0.2s;}
+.vtoggle.on{background:var(--babyblue);}
+.vtoggle-knob{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:left 0.2s;}
+.vtoggle.on .vtoggle-knob{left:20px;}
+#v-settings .sg-label{font-size:0.6rem;}
+#v-settings .vcard{padding:11px 14px;}
+#v-settings .vn{font-size:0.82rem;}
+#v-settings .vd{font-size:0.66rem;}
+#v-settings .otile{padding:11px 12px;}
+#v-settings .otn{font-size:0.8rem;}
+#v-settings .ots{font-size:0.64rem;}
+#v-settings .ogrid{gap:7px;margin-bottom:0;}
+#v-settings .vcards{gap:8px;}
+.sg-label{font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+#v-record{background:var(--cream);}
+.rhead{padding:18px 18px 14px;flex-shrink:0;display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--babyblue);}
+.rh{font-family:var(--serif);font-weight:600;font-size:1.5rem;color:var(--brown);}
+.rc{font-size:0.64rem;color:var(--dim);}
+.rscroll{flex:1;overflow-y:auto;padding:14px 0 20px;}
+.ri{padding:14px 18px;border-bottom:1px solid var(--cream2);}
+.ri-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}
+.rd{font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);}
+.ri-mood{font-size:0.9rem;}
+.rcat{font-size:0.58rem;color:var(--gold);letter-spacing:0.06em;margin-bottom:5px;}
+.rq{font-family:var(--serif);font-style:italic;font-size:0.85rem;color:var(--mid);line-height:1.38;margin-bottom:6px;}
+.ra{font-family:var(--serif);font-size:0.98rem;color:var(--text);line-height:1.5;}
+.rgap{padding:8px 18px;display:flex;align-items:center;gap:10px;}
+.rgl{flex:1;height:1px;background:var(--cream3);}
+.rgt{font-size:0.58rem;color:var(--dim);white-space:nowrap;}
+.rempty{flex:1;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;font-size:0.98rem;color:var(--dim);text-align:center;padding:0 36px;line-height:1.6;}
+#v-ask{background:var(--cream);overflow-x:hidden;}
+.akhead{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--cream3);flex-shrink:0;}
+.akh{font-family:var(--serif);font-weight:600;font-size:1rem;color:var(--brown);}
+.akthread{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;}
+.akintro{font-family:var(--serif);font-style:italic;font-size:0.92rem;color:var(--dim);line-height:1.6;text-align:center;padding:8px 0;}
+.bu{align-self:flex-end;background:var(--brown);border-radius:14px 14px 4px 14px;padding:11px 14px;max-width:82%;font-size:0.88rem;color:white;line-height:1.5;}
+.bi{align-self:flex-start;max-width:90%;}
+.bil{font-size:0.56rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.bit{font-family:var(--serif);font-size:1rem;color:var(--text);line-height:1.52;white-space:pre-line;}
+.dots{display:flex;gap:4px;padding:5px 0;}
+.dots span{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:db 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:.2s;}
+.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes db{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-5px);opacity:1}}
+.akfoot{padding:10px 16px 24px;display:flex;align-items:flex-end;gap:9px;border-top:1px solid var(--cream3);flex-shrink:0;}
+.akfield{flex:1;background:white;border:1.5px solid var(--cream3);border-radius:18px;padding:11px 14px;font-family:var(--sans);font-size:16px;color:var(--text);outline:none;resize:none;line-height:1.4;max-height:90px;overflow-y:auto;}
+.akfield:focus{border-color:var(--gold);}
+.akfield::placeholder{color:var(--dim);}
+.aksend{width:38px;height:38px;border-radius:50%;background:var(--babyblue);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:auto;}
+.aksend svg{width:13px;height:13px;stroke:white;fill:none;stroke-width:2.2;}
+.back-btn{background:none;border:none;cursor:pointer;padding:4px;pointer-events:auto;}
+.back-btn svg{width:21px;height:21px;stroke:var(--mid);fill:none;stroke-width:1.5;}
+.print-btn svg{width:26px;height:26px;}
+::-webkit-scrollbar{width:0;}
+@media print{
+  body *{visibility:hidden;}
+  #v-record,#v-record *{visibility:visible;}
+  html,body,#app{position:static;overflow:visible;height:auto;background:white;}
+  #v-record{position:static;display:block;overflow:visible;height:auto;max-width:none;background:white;}
+  .back-btn,.nav{display:none;}
+  .rscroll{overflow:visible;height:auto;padding:0;}
+  .ri{break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ASK LOCKED OVERLAY -->
+<div class="ask-locked-msg-overlay" id="alm-overlay" onclick="closeAskMsg()"></div>
+<div class="ask-locked-msg" id="alm">
+  <div class="alm-title">Not yet</div>
+  <div class="alm-text" id="alm-text">Keep going. Ask Innermost unlocks when your map is complete.</div>
+  <button class="alm-btn" onclick="closeAskMsg()">OK</button>
+</div>
+
+<!-- PHOTO NUDGE OVERLAY -->
+<div class="ask-locked-msg-overlay" id="photo-nudge-overlay" onclick="closePhotoNudge()"></div>
+<div class="ask-locked-msg" id="photo-nudge">
+  <div class="alm-title">No photo yet</div>
+  <div class="alm-text">Your map will still fill in as you go, but are you sure you don't want to add a photograph of yourself?</div>
+  <button class="alm-btn" onclick="goToPhotoFromNudge()">Add a photo</button>
+  <button class="alm-btn-secondary" onclick="closePhotoNudge()">Not now</button>
+</div>
+
+<!-- MOOD NUDGE OVERLAY -->
+<div class="ask-locked-msg-overlay" id="mood-nudge-overlay" onclick="closeMoodNudge()"></div>
+<div class="ask-locked-msg" id="mood-nudge">
+  <div class="alm-title">No mood picked</div>
+  <div class="alm-text">Want to add one before this saves, or is this fine as it is?</div>
+  <button class="alm-btn" onclick="closeMoodNudge()">Add a mood</button>
+  <button class="alm-btn-secondary" onclick="saveAnywayFromNudge()">Save anyway</button>
+</div>
+
+<!-- OB: VOICE -->
+<div class="view ob" id="v-ob-voice">
+  <div class="mhead">
+    <div class="mbrand">
+      <svg width="24" height="24" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="mlogo">Innermost</div><div class="mlogsub">Your living map</div></div>
+    </div>
+  </div>
+  <div class="ob-inner">
+    <button class="back-btn ob-settings-back" id="back-voice" onclick="backFromOb()" style="display:none;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="ob-tag">Before we begin</div>
+    <div class="ob-h">Who do you want<br>asking the questions?</div>
+    <div class="ob-p">Tap a name to select. Tap the speaker to hear the voice.</div>
+    <div class="vcards">
+      <div class="vcard" id="vc-warm" onclick="pickVoice('warm')">
+        <div><div class="vn">Warm &amp; slow</div><div class="vd">Unhurried. Grounded.</div></div>
+        <button class="vplay" onclick="event.stopPropagation();playVoice('warm',this);pickVoice('warm');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+      </div>
+      <div class="vcard" id="vc-clear" onclick="pickVoice('clear')">
+        <div><div class="vn">Clear &amp; direct</div><div class="vd">Present. Precise.</div></div>
+        <button class="vplay" onclick="event.stopPropagation();playVoice('clear',this);pickVoice('clear');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+      </div>
+      <div class="vcard" id="vc-soft" onclick="pickVoice('soft')">
+        <div><div class="vn">Soft &amp; considered</div><div class="vd">Gentle. Reflective.</div></div>
+        <button class="vplay" onclick="event.stopPropagation();playVoice('soft',this);pickVoice('soft');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+      </div>
+    </div>
+    <button class="btn-main" id="vn-btn" disabled onclick="continueFromOb('v-ob-time')">Continue</button>
+    <div class="ob-divider"></div>
+  </div>
+</div>
+
+<!-- OB: TIME -->
+<div class="view ob" id="v-ob-time">
+  <div class="mhead">
+    <div class="mbrand">
+      <svg width="24" height="24" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="mlogo">Innermost</div><div class="mlogsub">Your living map</div></div>
+    </div>
+  </div>
+  <div class="ob-inner">
+    <button class="back-btn ob-settings-back" id="back-time" onclick="backFromOb()" style="display:none;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="ob-tag">Your time</div>
+    <div class="ob-h">When do you want<br>the question to arrive?</div>
+    <div class="ob-p">The day needs to have happened before there's anything worth noticing.</div>
+    <div class="ogrid">
+      <div class="otile" onclick="pickTime('morning',this)"><div class="otn">Morning</div><div class="ots">The day ahead</div></div>
+      <div class="otile" onclick="pickTime('afternoon',this)"><div class="otn">Afternoon</div><div class="ots">Halfway through</div></div>
+      <div class="otile" onclick="pickTime('evening',this)"><div class="otn">Evening</div><div class="ots">Recommended</div></div>
+      <div class="otile" onclick="pickTime('night',this)"><div class="otn">Night</div><div class="ots">Before sleep</div></div>
+    </div>
+    <button class="btn-main" id="time-btn" disabled onclick="continueFromOb('v-ob-difficulty')">Continue</button>
+    <div class="ob-divider"></div>
+  </div>
+</div>
+
+<!-- OB: DIFFICULTY -->
+<div class="view ob" id="v-ob-difficulty">
+  <div class="mhead">
+    <div class="mbrand">
+      <svg width="24" height="24" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="mlogo">Innermost</div><div class="mlogsub">Your living map</div></div>
+    </div>
+  </div>
+  <div class="ob-inner">
+    <button class="back-btn ob-settings-back" id="back-difficulty" onclick="backFromOb()" style="display:none;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="ob-tag">How deep to go</div>
+    <div class="ob-h">How much do you<br>want the questions<br>to ask of you?</div>
+    <div class="ob-p">You can change this anytime in Settings.</div>
+    <div class="ogrid">
+      <div class="otile on" id="ob-diff-auto" onclick="pickDifficultyOb(null,this)"><div class="otn">Auto</div><div class="ots">Eases in as you go</div></div>
+      <div class="otile" id="ob-diff-easy" onclick="pickDifficultyOb('easy',this)"><div class="otn">Easy</div><div class="ots">Gentle. Little friction.</div></div>
+      <div class="otile" id="ob-diff-normal" onclick="pickDifficultyOb('normal',this)"><div class="otn">Normal</div><div class="ots">A steady, honest pace.</div></div>
+      <div class="otile" id="ob-diff-hard" onclick="pickDifficultyOb('hard',this)"><div class="otn">Hard</div><div class="ots">Real excavation.</div></div>
+    </div>
+    <button class="btn-main" onclick="continueFromOb('v-ob-channel')">Continue</button>
+    <div class="ob-divider"></div>
+  </div>
+</div>
+
+<!-- OB: CHANNEL -->
+<div class="view ob" id="v-ob-channel">
+  <div class="mhead">
+    <div class="mbrand">
+      <svg width="24" height="24" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="mlogo">Innermost</div><div class="mlogsub">Your living map</div></div>
+    </div>
+  </div>
+  <div class="ob-inner">
+    <div class="ob-tag">How to reach you</div>
+    <div class="ob-h">How do you want<br>me to find you?</div>
+    <div class="ob-p">The question itself arrives — not a reminder, the question.</div>
+    <div class="olist">
+      <div class="orow" onclick="pickChannel('push',this)"><div class="orn">On my phone</div><div class="ors">The question appears on your lock screen</div></div>
+      <div class="orow" onclick="goTo('v-ob-email')"><div class="orn">By email</div><div class="ors" id="email-sub">Question arrives in your inbox</div></div>
+      <div class="orow" onclick="goTo('v-ob-phone')"><div class="orn">By text</div><div class="ors" id="phone-sub">Straight to your messages</div></div>
+    </div>
+    <div class="proto-note" style="display:flex;gap:8px;align-items:flex-start;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><span>This is the only thing we'll ever contact you about — no other alerts, no marketing. Your preference is saved. In the full version, this is how the question will reach you, carrying the question itself, not just a reminder to open the app.</span></div>
+    <button class="btn-main" onclick="goTo('v-ob-photo')">Continue</button>
+    <div class="ob-divider"></div>
+  </div>
+</div>
+
+<!-- OB: EMAIL ENTRY -->
+<div class="view ob" id="v-ob-email">
+  <div class="mhead">
+    <div class="mbrand">
+      <svg width="24" height="24" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="mlogo">Innermost</div><div class="mlogsub">Your living map</div></div>
+    </div>
+  </div>
+  <div class="ob-inner">
+    <button class="back-btn" onclick="goTo('v-ob-channel')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="ob-tag">By email</div>
+    <div class="ob-h">What's your<br>email address?</div>
+    <div class="ob-p">The question arrives in your inbox, exactly as it is — nothing else.</div>
+    <input type="email" id="email-input" class="email-field" placeholder="you@example.com" inputmode="email" autocapitalize="off" autocorrect="off">
+    <button class="btn-main" id="email-btn" disabled onclick="saveEmail()">Continue</button>
+    <div class="ob-divider"></div>
+  </div>
+</div>
+
+<!-- OB: PHONE ENTRY -->
+<div class="view ob" id="v-ob-phone">
+  <div class="mhead">
+    <div class="mbrand">
+      <svg width="24" height="24" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="mlogo">Innermost</div><div class="mlogsub">Your living map</div></div>
+    </div>
+  </div>
+  <div class="ob-inner">
+    <button class="back-btn" onclick="goTo('v-ob-channel')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="ob-tag">By text</div>
+    <div class="ob-h">What's your<br>phone number?</div>
+    <div class="ob-p">The question arrives as a text, exactly as it is — nothing else.</div>
+    <input type="tel" id="phone-input" class="email-field" placeholder="+1 555 123 4567" inputmode="tel" autocapitalize="off" autocorrect="off">
+    <button class="btn-main" id="phone-btn" disabled onclick="savePhone()">Continue</button>
+    <div class="ob-divider"></div>
+  </div>
+</div>
+
+
+<!-- OB: PHOTO -->
+<div class="view photo-ob" id="v-ob-photo">
+  <div class="mhead">
+    <div class="mbrand">
+      <svg width="24" height="24" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="mlogo">Innermost</div><div class="mlogsub">Your living map</div></div>
+    </div>
+  </div>
+  <div class="photo-inner">
+    <div class="ob-tag">One last thing</div>
+    <div class="ob-h">Choose a photograph<br>of yourself.</div>
+    <div class="ob-p" style="max-width:270px;margin:0 auto;">Each entry you save reveals a piece of it. It stays hidden until then — a picture of you, slowly coming into view as your record builds.</div>
+    <div class="photo-circle" id="photo-circle-pick" onclick="document.getElementById('pfile').click()">
+      <svg id="psvg" viewBox="0 0 24 24" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <img id="pimg" src="">
+    </div>
+    <input type="file" id="pfile" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+    <div class="photo-tap" id="photo-tap-txt" onclick="document.getElementById('pfile').click()">Tap to choose a photo</div>
+
+    <div id="reposition-panel" style="display:none;width:100%;">
+      <div class="ob-p" style="margin-bottom:10px;">Drag to position your photo.</div>
+      <div class="reposition-frame" id="reposition-frame">
+        <img id="reposition-img" src="">
+      </div>
+      <div class="photo-tap" onclick="document.getElementById('pfile').click()">Choose a different photo</div>
+    </div>
+
+    <button class="btn-main" onclick="beginApp()">Begin</button>
+    <button class="btn-skip" onclick="beginApp()">Skip for now</button>
+    <div class="ob-divider"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="view" id="v-main">
+  <div class="toast" id="toast"></div>
+  <div class="mhead">
+    <div class="mbrand">
+      <svg width="24" height="24" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="mlogo">Innermost</div><div class="mlogsub">Your living map</div></div>
+    </div>
+    <div class="hright">
+      <button class="icon-btn" onclick="navTo('report')">Your Record</button>
+      <button class="icon-btn" style="padding:8px 11px;" onclick="openSettings()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.09H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </div>
+  </div>
+  <div class="jig-card">
+    <img id="jig-photo" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;display:none;">
+    <div id="jig-overlay" style="position:absolute;inset:0;z-index:2;pointer-events:none !important;display:none;background:transparent;"></div>
+    <div class="jig-empty" id="jig-empty" style="display:none;">
+      <div class="jig-empty-grid" id="jig-grid"></div>
+    </div>
+  </div>
+  <div class="mbody">
+    <div class="prompt-card">
+      <div class="pc-lbl">Today's prompt</div>
+      <div class="mood-lbl">How are you feeling?</div>
+      <div class="mood-row-compact">
+        <button class="mbtn-sm" onclick="setMood('happy',this)"><span class="mi-sm">😊</span><span class="ml-sm">Happy</span></button>
+        <button class="mbtn-sm" onclick="setMood('calm',this)"><span class="mi-sm">😌</span><span class="ml-sm">Calm</span></button>
+        <button class="mbtn-sm" onclick="setMood('tired',this)"><span class="mi-sm">😴</span><span class="ml-sm">Tired</span></button>
+        <button class="mbtn-sm" onclick="setMood('anxious',this)"><span class="mi-sm">😟</span><span class="ml-sm">Anxious</span></button>
+        <button class="mbtn-sm" onclick="setMood('sad',this)"><span class="mi-sm">😢</span><span class="ml-sm">Sad</span></button>
+      </div>
+      <div class="pc-qt-wrap">
+        <div class="pc-qt-scroll" id="pc-qt-scroll">
+          <div class="pc-qt" id="main-q">Loading...</div>
+        </div>
+        <div class="pc-qt-track" id="pc-qt-track"><div class="pc-qt-thumb" id="pc-qt-thumb"></div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;align-self:flex-start;">
+          <button class="q-play-btn" id="q-play-btn" onclick="playMainQuestion()" aria-label="Play question" style="width:34px;height:34px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+          <button class="q-play-btn" onclick="skipQuestion()" aria-label="Try another question" style="width:34px;height:34px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="free-note">Or just say whatever's on your mind.</div>
+      <div class="ta-wrap">
+        <textarea class="ans-ta" id="ans-ta" placeholder="Your answer…"></textarea>
+        <button class="inline-mic" id="mic-btn" onclick="toggleMic()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
+      </div>
+      <div class="mic-lbl" id="mic-lbl" style="font-size:0.6rem;color:var(--dim);text-align:right;margin-top:2px;"></div>
+    </div>
+    <div class="bottom-info">
+      <div style="display:flex;justify-content:center;">
+        <button class="save-btn" onclick="saveEntry()">Save</button>
+      </div>
+      <div style="display:flex;justify-content:center;margin-top:2px;">
+        <button class="ask-strip" id="ask-strip" onclick="tryAsk()">
+          <svg width="16" height="16" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/></svg>
+          <div class="ask-strip-t">Ask Innermost</div>
+        </button>
+      </div>
+      <div class="prog-row" style="margin-top:4px;">
+        <span class="prog-lbl">Building your map</span>
+        <span class="prog-cnt" id="prog-cnt">0 entries</span>
+      </div>
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="ask-hint" id="ask-hint"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view" id="v-settings">
+  <div class="settings-head">
+    <button class="back-btn" onclick="goTo('v-main');refreshMain();"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="settings-title">Settings</div>
+  </div>
+  <div class="settings-body">
+    <div class="srow" onclick="goToFromSettings('v-ob-voice')">
+      <div class="srow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--babyblue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+      <div class="srow-text"><div class="srow-label">Voice</div><div class="srow-val" id="sv-val">Warm &amp; slow</div></div>
+      <svg class="srow-chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="srow" id="voice-toggle-row" onclick="toggleVoiceEnabled()">
+      <div class="srow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--babyblue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+      <div class="srow-text"><div class="srow-label">Voice playback</div><div class="srow-val" id="voice-toggle-val">On</div></div>
+      <div class="vtoggle" id="voice-toggle"><div class="vtoggle-knob"></div></div>
+    </div>
+    <div class="srow" onclick="goToFromSettings('v-ob-difficulty')">
+      <div class="srow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--babyblue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
+      <div class="srow-text"><div class="srow-label">Question difficulty</div><div class="srow-val" id="sd-val">Auto</div></div>
+      <svg class="srow-chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="srow" onclick="goToFromSettings('v-ob-time')">
+      <div class="srow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--babyblue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="srow-text"><div class="srow-label">Notification time</div><div class="srow-val" id="st-val">Evening</div></div>
+      <svg class="srow-chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div>
+      <div class="sg-label">Your photograph</div>
+      <div style="display:flex;align-items:center;gap:14px;background:white;border:1.5px solid var(--cream3);border-radius:11px;padding:12px 14px;">
+        <div style="width:60px;height:60px;border-radius:50%;overflow:hidden;border:1.5px solid var(--gold2);background:var(--cream2);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="document.getElementById('sfile').click()">
+          <svg id="s-psvg" viewBox="0 0 24 24" stroke-width="1" width="24" height="24" stroke="var(--dim)" fill="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <img id="s-pimg" src="" style="width:100%;height:100%;object-fit:cover;display:none;">
+        </div>
+        <div><div style="font-size:0.82rem;color:var(--text);">Change your photo</div><div style="font-size:0.7rem;color:var(--dim);margin-top:2px;">Tap the circle to choose</div></div>
+      </div>
+      <input type="file" id="sfile" accept="image/*" style="display:none" onchange="handleSettingsPhoto(this)">
+      <div class="srow" id="reposition-link" onclick="openReposition()" style="display:none;margin-top:12px;">
+        <div class="srow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--babyblue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        <div class="srow-text"><div class="srow-label">Photo</div><div class="srow-val">Reposition</div></div>
+        <svg class="srow-chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+    <div>
+      <div class="sg-label">Feedback</div>
+      <div class="srow" onclick="openFeedback()">
+        <div class="srow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--babyblue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="srow-text"><div class="srow-label">Report a problem</div><div class="srow-val">Or suggest something</div></div>
+        <svg class="srow-chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+    <div>
+      <div class="sg-label">Reset</div>
+      <button onclick="resetApp()" style="background:none;border:1px solid rgba(192,85,74,0.35);border-radius:8px;padding:10px 16px;font-size:0.78rem;color:#c0554a;cursor:pointer;width:100%;pointer-events:auto;">Reset app and start over</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPOSITION PHOTO -->
+<div class="view" id="v-reposition">
+  <div class="settings-head">
+    <button class="back-btn" onclick="goTo('v-settings')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="settings-title">Reposition photo</div>
+  </div>
+  <div class="settings-body">
+    <div style="font-size:0.7rem;color:var(--dim);margin-bottom:8px;">Drag to position your photo.</div>
+    <div class="reposition-frame" id="s-reposition-frame">
+      <img id="s-reposition-img" src="">
+    </div>
+    <button class="btn-main" style="margin-top:16px;" onclick="goTo('v-settings')">Done</button>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="view" id="v-feedback">
+  <div class="settings-head">
+    <button class="back-btn" onclick="goTo('v-settings')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="settings-title">Report a problem</div>
+  </div>
+  <div class="settings-body">
+    <div style="font-size:0.7rem;color:var(--dim);margin-bottom:12px;">Tell us what's wrong, or what you'd like to see. This opens your mail app so you can send it directly.</div>
+    <textarea id="feedback-ta" placeholder="What's going on?" style="width:100%;min-height:120px;background:white;border:1.5px solid var(--cream3);border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:16px;color:var(--text);outline:none;resize:none;line-height:1.4;"></textarea>
+    <button class="btn-main" style="margin-top:16px;" onclick="sendFeedback()">Send</button>
+  </div>
+</div>
+
+<!-- REPORT -->
+
+<div class="view" id="v-record">
+  <div class="rhead">
+    <button class="back-btn" onclick="navTo('main')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="rh">Your Record</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="rc" id="rc"></div>
+      <button class="back-btn print-btn" onclick="window.print()" aria-label="Print report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
+    </div>
+  </div>
+  <div class="rscroll" id="rlist"></div>
+  <div class="nav">
+    <button class="nbtn" onclick="navTo('main')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Today</span></button>
+    <button class="nbtn on"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span>Your Record</span></button>
+    <button class="nbtn" onclick="navTo('ask')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Ask</span></button>
+  </div>
+</div>
+
+<!-- ASK -->
+<div class="view" id="v-ask">
+  <div class="akhead">
+    <button class="back-btn" onclick="navTo('main')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="akh">Ask Innermost</div>
+  </div>
+  <div class="akthread" id="akthread">
+    <div class="akintro">Ask anything. What you find here comes entirely from what you have already said.</div>
+  </div>
+  <div class="akfoot">
+    <textarea class="akfield" id="akfield" placeholder="What do you want to know?" rows="1"
+      oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAsk();}"></textarea>
+    <button class="aksend" onclick="sendAsk()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </div>
+</div>
+
+</div>
+<script>
+const SK='im8';
+let S=JSON.parse(localStorage.getItem(SK)||'null')||{onboarded:false,voice:'warm',voiceEnabled:true,time:'evening',channel:null,email:null,phone:null,photo:null,photoY:50,entries:[],coverage:{},todayDate:'',todayQ:null,todayCat:null,skipped:[],mood:null,difficultyFilter:null,jigOrder:null};
+const sv=()=>localStorage.setItem(SK,JSON.stringify(S));
+const TARGET=12;
+const MOOD_ICONS={'happy':'😊','calm':'😌','tired':'😴','anxious':'😟','sad':'😢'};
+
+const QS={'Right Now':["What's on your mind today?","What is on your mind today that you haven't said out loud to anyone?","What is something you're looking forward to, even something small?","What would make today feel complete?","What is the truest thing you could say about where you are right now?","What do you need today that you haven't asked for?","What is the weather like where you are and how is it sitting with you today?","What is a sound you can hear right now?","What would the most honest version of you say about today so far?","What is one thing you could do today that would make tomorrow easier?","What is something you're grateful for today that you didn't expect to be grateful for?","What is a smell in your immediate world right now?","What would you do today if nobody needed anything from you?","What is something your body is telling you right now that you've been ignoring?","What is the kindest thing you could do for yourself in the next hour?","What did you encounter today with a stranger?","What did you read or hear today that you can't stop thinking about?"],'The Quiet Good':["What made you smile today before you were fully awake?","What is something tiny that happened today that made you feel exactly like yourself?","What made you laugh today?","What did you see today that made you feel good about being alive?","What is a small pleasure you built into your day today that was entirely for you?","What did you notice today that most people walked straight past?","What do you want to remember about today?","What did you do today on pure instinct that turned out to be exactly right?","What is something you sorted out this week that was quietly bothering you?","What small act of maintenance did you do today that nobody will notice but matters?","What did you start today that took more courage than it sounds?","What is something you've been quietly consistent about that nobody has noticed but you have?","What did you finish recently that you started a long time ago?","What did you choose not to say today and why was that the right call?","What did you do today that was good for future you, even though present you didn't feel like it?","What problem did you solve quietly this week that nobody will ever know about?","What did you say today that you actually meant, rather than what was expected?","What small decision did you make today that nobody saw but felt right?","What do you want to remember about this month?","What is something that works in your life right now that you never stop to appreciate?"],'Being Exactly Yourself':["What is something you do well that you never think to mention because it just feels like you?","What is something you care about deeply but rarely mention, unsure anyone would get it?","What quality would the people who love you name immediately, that you rarely claim for yourself?","What is something you've gotten better at without ever formally trying to improve?","What is a habit or ritual that is entirely yours — one that makes your life feel like your life?","What is a way of seeing the world that is distinctly yours — a lens nobody gave you?","What is something you love without irony or qualification?","What is something you've always known about yourself that took other people a long time to see?","What is a value you hold that you've never had to think about because it just is you?","What did you do today that was harder than it looked from the outside?","What is something you do regularly that you'd miss immediately if you couldn't do it anymore?","What is a problem you're handling right now better than you're giving yourself credit for?","When did you last surprise yourself?","What do you do when nobody is watching that tells you something true about who you are?","When did you last feel proud of yourself in a quiet way — not triumphant, just settled and sure?","What is something you said recently that came out exactly right?","When did you last do something your way instead of the way you were supposed to — and it worked?","What is something you find funny that you're not sure anyone else would?","What is a subject you could talk about for hours that you rarely get the chance to?","What is something you do differently from most people that you've stopped apologising for?"],'The World Outside You':["What did you hear today that made your heart sing?","When did you last feel small in a good way?","What is an idea you've been turning over lately that you can't quite resolve and don't want to?","What did you read or hear recently that changed something small in how you see things?","What is a place you've never been that you carry around in your imagination anyway?","What is something happening in the world right now — not the bad things — that has your attention?","When did something completely ordinary suddenly seem miraculous?","What is a question about existence that you find genuinely beautiful rather than frightening?","What is something beautiful you encountered this week that had nothing to do with you?","What did the sky do recently that you actually noticed?","What is something that exists in the natural world that still astonishes you?","What is something happening right now in science or nature that gives you genuine hope?","What is something in nature that you find quietly hilarious?","What is something you saw recently that was made by human hands and made you glad humans exist?","What is a city or landscape that lives in you even though you're not there?","What is something you know about the world that most people don't?"],'Other People':["When did you last feel truly understood by another person?","Who made you feel seen this week, even briefly?","What is something you and another person share that needs no explanation between you?","Who did you feel most like yourself around recently?","What is something someone did recently that reminded you people are mostly good?","Who in your life right now brings out a version of you that you like?","What is something someone said to you recently that landed in a good way?","Who do you admire quietly, without ever having told them?","What is a kindness someone showed you recently that you didn't expect?","Who is someone in your life that you understand better now than you used to?","What did someone do recently that made you think — I want to be more like that?","Who makes you laugh in a way that nobody else does?","What is a relationship in your life right now that is quietly nourishing you?","What is something a stranger did recently that restored something in you?","What is a conversation you had recently that left you feeling more alive than before it?","Who taught you something important without knowing they were teaching you anything?","Who would you call if something genuinely wonderful happened today?"],'Looking Back':["What did a younger version of you get right that you sometimes forget?","What is something you survived that you didn't think you would?","What is a moment from your past that you return to when you need to remember who you are?","Who believed in you before you believed in yourself?","What do you understand now that you didn't a year ago?","What's a conclusion you've reached recently that surprised you?","What is something you believed five years ago that you've quietly let go of since?","What is a decision you made that looked wrong at the time and turned out to be right?","What is something you learned from someone who is no longer in your life?","What is a period of your life that was hard then, but made you someone you're glad you are now?","What is the best piece of advice you ever received and why did it land when it did?","What is something you used to be afraid of that no longer has any power over you?","What is something you've carried with you from childhood that still serves you?","What is a failure that turned out to be the making of you?","What is something you understood about life earlier than most people?","What is a moment when everything changed — not dramatically, just quietly and permanently?","What is something you inherited from your family that you're glad you kept?","What did you want to be when you grew up and what does that tell you about who you actually are?","What is something you forgave — yourself or someone else — that freed you?"]};
+const QD={
+'Right Now':[["What's on your mind today?","easy"],["What is on your mind today that you haven't said out loud to anyone?","normal"],["What is something you're looking forward to, even something small?","easy"],["What would make today feel complete?","easy"],["What is the truest thing you could say about where you are right now?","normal"],["What do you need today that you haven't asked for?","normal"],["What is the weather like where you are and how is it sitting with you today?","easy"],["What is a sound you can hear right now?","easy"],["What would the most honest version of you say about today so far?","normal"],["What is one thing you could do today that would make tomorrow easier?","easy"],["What is something you're grateful for today that you didn't expect to be grateful for?","normal"],["What is a smell in your immediate world right now?","easy"],["What would you do today if nobody needed anything from you?","normal"],["What is something your body is telling you right now that you've been ignoring?","normal"],["What is the kindest thing you could do for yourself in the next hour?","easy"],["What did you encounter today with a stranger?","easy"],["What did you read or hear today that you can't stop thinking about?","easy"]],
+'The Quiet Good':[["What made you smile today before you were fully awake?","easy"],["What is something tiny that happened today that made you feel exactly like yourself?","normal"],["What made you laugh today?","easy"],["What did you see today that made you feel good about being alive?","easy"],["What is a small pleasure you built into your day today that was entirely for you?","easy"],["What did you notice today that most people walked straight past?","normal"],["What do you want to remember about today?","easy"],["What did you do today on pure instinct that turned out to be exactly right?","normal"],["What is something you sorted out this week that was quietly bothering you?","easy"],["What small act of maintenance did you do today that nobody will notice but matters?","easy"],["What did you start today that took more courage than it sounds?","normal"],["What is something you've been quietly consistent about that nobody has noticed but you have?","normal"],["What did you finish recently that you started a long time ago?","easy"],["What did you choose not to say today and why was that the right call?","normal"],["What did you do today that was good for future you, even though present you didn't feel like it?","normal"],["What problem did you solve quietly this week that nobody will ever know about?","easy"],["What did you say today that you actually meant, rather than what was expected?","normal"],["What small decision did you make today that nobody saw but felt right?","easy"],["What do you want to remember about this month?","normal"],["What is something that works in your life right now that you never stop to appreciate?","easy"]],
+'Being Exactly Yourself':[["What is something you do well that you never think to mention because it just feels like you?","normal"],["What is something you care about deeply but rarely mention, unsure anyone would get it?","hard"],["What quality would the people who love you name immediately, that you rarely claim for yourself?","hard"],["What is something you've gotten better at without ever formally trying to improve?","normal"],["What is a habit or ritual that is entirely yours — one that makes your life feel like your life?","easy"],["What is a way of seeing the world that is distinctly yours — a lens nobody gave you?","hard"],["What is something you love without irony or qualification?","easy"],["What is something you've always known about yourself that took other people a long time to see?","hard"],["What is a value you hold that you've never had to think about because it just is you?","hard"],["What did you do today that was harder than it looked from the outside?","normal"],["What is something you do regularly that you'd miss immediately if you couldn't do it anymore?","easy"],["What is a problem you're handling right now better than you're giving yourself credit for?","normal"],["When did you last surprise yourself?","normal"],["What do you do when nobody is watching that tells you something true about who you are?","hard"],["When did you last feel proud of yourself in a quiet way — not triumphant, just settled and sure?","normal"],["What is something you said recently that came out exactly right?","normal"],["When did you last do something your way instead of the way you were supposed to — and it worked?","normal"],["What is something you find funny that you're not sure anyone else would?","easy"],["What is a subject you could talk about for hours that you rarely get the chance to?","easy"],["What is something you do differently from most people that you've stopped apologising for?","hard"]],
+'The World Outside You':[["What did you hear today that made your heart sing?","easy"],["When did you last feel small in a good way?","normal"],["What is an idea you've been turning over lately that you can't quite resolve and don't want to?","hard"],["What did you read or hear recently that changed something small in how you see things?","normal"],["What is a place you've never been that you carry around in your imagination anyway?","easy"],["What is something happening in the world right now — not the bad things — that has your attention?","easy"],["When did something completely ordinary suddenly seem miraculous?","normal"],["What is a question about existence that you find genuinely beautiful rather than frightening?","hard"],["What is something beautiful you encountered this week that had nothing to do with you?","easy"],["What did the sky do recently that you actually noticed?","easy"],["What is something that exists in the natural world that still astonishes you?","easy"],["What is something happening right now in science or nature that gives you genuine hope?","normal"],["What is something in nature that you find quietly hilarious?","easy"],["What is something you saw recently that was made by human hands and made you glad humans exist?","normal"],["What is a city or landscape that lives in you even though you're not there?","normal"],["What is something you know about the world that most people don't?","normal"]],
+'Other People':[["When did you last feel truly understood by another person?","normal"],["Who made you feel seen this week, even briefly?","easy"],["What is something you and another person share that needs no explanation between you?","normal"],["Who did you feel most like yourself around recently?","normal"],["What is something someone did recently that reminded you people are mostly good?","easy"],["Who in your life right now brings out a version of you that you like?","normal"],["What is something someone said to you recently that landed in a good way?","easy"],["Who do you admire quietly, without ever having told them?","normal"],["What is a kindness someone showed you recently that you didn't expect?","easy"],["Who is someone in your life that you understand better now than you used to?","normal"],["What did someone do recently that made you think — I want to be more like that?","easy"],["Who makes you laugh in a way that nobody else does?","easy"],["What is a relationship in your life right now that is quietly nourishing you?","normal"],["What is something a stranger did recently that restored something in you?","easy"],["What is a conversation you had recently that left you feeling more alive than before it?","normal"],["Who taught you something important without knowing they were teaching you anything?","normal"],["Who would you call if something genuinely wonderful happened today?","easy"]],
+'Looking Back':[["What did a younger version of you get right that you sometimes forget?","hard"],["What is something you survived that you didn't think you would?","hard"],["What is a moment from your past that you return to when you need to remember who you are?","hard"],["Who believed in you before you believed in yourself?","normal"],["What do you understand now that you didn't a year ago?","normal"],["What's a conclusion you've reached recently that surprised you?","normal"],["What is something you believed five years ago that you've quietly let go of since?","normal"],["What is a decision you made that looked wrong at the time and turned out to be right?","normal"],["What is something you learned from someone who is no longer in your life?","hard"],["What is a period of your life that was hard then, but made you someone you're glad you are now?","hard"],["What is the best piece of advice you ever received and why did it land when it did?","normal"],["What is something you used to be afraid of that no longer has any power over you?","normal"],["What is something you've carried with you from childhood that still serves you?","normal"],["What is a failure that turned out to be the making of you?","hard"],["What is something you understood about life earlier than most people?","hard"],["What is a moment when everything changed — not dramatically, just quietly and permanently?","hard"],["What is something you inherited from your family that you're glad you kept?","normal"],["What did you want to be when you grew up and what does that tell you about who you actually are?","normal"],["What is something you forgave — yourself or someone else — that freed you?","hard"]],
+};
+const DEPTH={'Right Now':1,'The Quiet Good':1,'Being Exactly Yourself':2,'Other People':2,'The World Outside You':2,'Looking Back':3};
+const CATS=Object.keys(QS);
+
+// ROUTING
+let cameFromSettings=false;
+function goToFromSettings(id){
+  cameFromSettings=true;
+  goTo(id);
+  document.querySelectorAll('.ob-settings-back').forEach(b=>b.style.display='none');
+  const backMap={'v-ob-voice':'back-voice','v-ob-time':'back-time','v-ob-difficulty':'back-difficulty'};
+  const btnId=backMap[id];
+  if(btnId)document.getElementById(btnId).style.display='flex';
+}
+function backFromOb(){
+  if(cameFromSettings){cameFromSettings=false;openSettings();}
+  else{goTo('v-ob-time');}
+}
+function continueFromOb(nextId){
+  if(cameFromSettings){cameFromSettings=false;openSettings();}
+  else{goTo(nextId);}
+}
+function goTo(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
+  document.getElementById(id).classList.add('show');
+  if(id==='v-ob-email'&&S.email){
+    const inp=document.getElementById('email-input');
+    if(inp){inp.value=S.email;document.getElementById('email-btn').disabled=false;}
+  }
+  if(id==='v-ob-phone'&&S.phone){
+    const inp=document.getElementById('phone-input');
+    if(inp){inp.value=S.phone;document.getElementById('phone-btn').disabled=false;}
+  }
+}
+
+// ONBOARD
+function pickVoice(v){
+  S.voice=v;sv();
+  document.querySelectorAll('#v-ob-voice .vcard').forEach(c=>c.classList.remove('on'));
+  document.getElementById('vc-'+v).classList.add('on');
+  document.getElementById('vn-btn').disabled=false;
+}
+function playMainQuestion(){
+  if(!window.speechSynthesis||!S.todayQ)return;
+  if(S.voiceEnabled===false)return;
+  window.speechSynthesis.cancel();
+  const btn=document.getElementById('q-play-btn');
+  setTimeout(()=>{
+    const u=new SpeechSynthesisUtterance(S.todayQ);
+    const v=S.voice||'warm';
+    if(v==='warm'){u.rate=0.82;u.pitch=0.88;}else if(v==='clear'){u.rate=1.05;u.pitch=1.0;}else{u.rate=0.9;u.pitch=1.12;}
+    const vcs=window.speechSynthesis.getVoices();const en=vcs.filter(x=>x.lang.startsWith('en'));if(en.length)u.voice=en[0];
+    if(btn)btn.classList.add('playing');
+    u.onend=()=>{if(btn)btn.classList.remove('playing');};
+    window.speechSynthesis.speak(u);
+  },100);
+}
+function playVoice(v,el){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  setTimeout(()=>{
+    const u=new SpeechSynthesisUtterance("What made you smile today before you were fully awake?");
+    if(v==='warm'){u.rate=0.82;u.pitch=0.88;}else if(v==='clear'){u.rate=1.05;u.pitch=1.0;}else{u.rate=0.9;u.pitch=1.12;}
+    const vcs=window.speechSynthesis.getVoices();const en=vcs.filter(x=>x.lang.startsWith('en'));if(en.length)u.voice=en[0];
+    if(el){el.classList.add('playing');u.onend=()=>{el.classList.remove('playing');};}
+    window.speechSynthesis.speak(u);
+  },150);
+}
+function pickTime(t,el){S.time=t;sv();document.querySelectorAll('#v-ob-time .otile').forEach(e=>e.classList.remove('on'));el.classList.add('on');const btn=document.getElementById('time-btn');if(btn)btn.disabled=false;}
+function resetChannelSubs(except){
+  if(except!=='email'){const s=document.getElementById('email-sub');if(s){s.textContent='Question arrives in your inbox';s.classList.remove('filled');}}
+  if(except!=='sms'){const s=document.getElementById('phone-sub');if(s){s.textContent='Straight to your messages';s.classList.remove('filled');}}
+}
+function pickChannel(ch,el){S.channel=ch;sv();resetChannelSubs(ch);document.querySelectorAll('.orow').forEach(e=>e.classList.remove('on'));el.classList.add('on');}
+function saveEmail(){
+  const val=document.getElementById('email-input').value.trim();
+  if(!val)return;
+  S.channel='email';S.email=val;sv();
+  resetChannelSubs('email');
+  const sub=document.getElementById('email-sub');
+  if(sub){sub.textContent=val;sub.classList.add('filled');}
+  document.querySelectorAll('.orow').forEach(e=>e.classList.remove('on'));
+  const emailRow=document.querySelector('.orow[onclick*="v-ob-email"]');
+  if(emailRow)emailRow.classList.add('on');
+  goTo('v-ob-channel');
+}
+function savePhone(){
+  const val=document.getElementById('phone-input').value.trim();
+  if(!val)return;
+  S.channel='sms';S.phone=val;sv();
+  resetChannelSubs('sms');
+  const sub=document.getElementById('phone-sub');
+  if(sub){sub.textContent=val;sub.classList.add('filled');}
+  document.querySelectorAll('.orow').forEach(e=>e.classList.remove('on'));
+  const phoneRow=document.querySelector('.orow[onclick*="v-ob-phone"]');
+  if(phoneRow)phoneRow.classList.add('on');
+  goTo('v-ob-channel');
+}
+function handlePhoto(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    S.photo=e.target.result;S.photoY=50;sv();
+    document.getElementById('photo-circle-pick').style.display='none';
+    document.getElementById('photo-tap-txt').style.display='none';
+    const panel=document.getElementById('reposition-panel');
+    panel.style.display='block';
+    const rimg=document.getElementById('reposition-img');
+    rimg.src=S.photo;
+    rimg.onload=()=>{setupReposition(rimg,document.getElementById('reposition-frame'));};
+  };
+  r.readAsDataURL(f);
+}
+
+// REPOSITION DRAG
+function setupReposition(img,frame){
+  applyRepositionTransform(img,frame);
+  let dragging=false,startY=0,startPct=S.photoY;
+  const onDown=ev=>{
+    dragging=true;startY=(ev.touches?ev.touches[0].clientY:ev.clientY);startPct=S.photoY;
+  };
+  const onMove=ev=>{
+    if(!dragging)return;
+    const y=(ev.touches?ev.touches[0].clientY:ev.clientY);
+    const dy=y-startY;
+    const fh=frame.offsetHeight||160;
+    const pct=Math.max(0,Math.min(100,startPct-(dy/fh)*100));
+    S.photoY=pct;sv();
+    applyRepositionTransform(img,frame);
+  };
+  const onUp=()=>{dragging=false;};
+  frame.onmousedown=onDown;window.addEventListener('mousemove',onMove);window.addEventListener('mouseup',onUp);
+  frame.ontouchstart=onDown;frame.addEventListener('touchmove',onMove,{passive:true});frame.addEventListener('touchend',onUp);
+}
+function applyRepositionTransform(img,frame){
+  const fh=frame.offsetHeight||160,fw=frame.offsetWidth||300;
+  const natW=img.naturalWidth,natH=img.naturalHeight;
+  if(!natW||!natH)return;
+  const scaledH=fw*(natH/natW);
+  img.style.height=scaledH+'px';
+  const maxOffset=Math.max(0,scaledH-fh);
+  const offset=maxOffset*(S.photoY/100);
+  img.style.top=(-offset)+'px';
+}
+function beginApp(){S.onboarded=true;sv();pickToday();refreshMain();goTo('v-main');}
+
+// SETTINGS
+const VOICE_LABELS={warm:'Warm & slow',clear:'Clear & direct',soft:'Soft & considered'};
+const TIME_LABELS={morning:'Morning',afternoon:'Afternoon',evening:'Evening',night:'Night'};
+const DIFF_LABELS={easy:'Easy',normal:'Normal',hard:'Hard'};
+function toggleVoiceEnabled(){
+  S.voiceEnabled=(S.voiceEnabled===false);sv();
+  if(!S.voiceEnabled&&window.speechSynthesis)window.speechSynthesis.cancel();
+  syncVoiceToggle();
+}
+function syncVoiceToggle(){
+  const on=S.voiceEnabled!==false;
+  const t=document.getElementById('voice-toggle');
+  const v=document.getElementById('voice-toggle-val');
+  if(t)t.classList.toggle('on',on);
+  if(v)v.textContent=on?'On':'Off';
+}
+function openSettings(){
+  document.getElementById('sv-val').textContent=VOICE_LABELS[S.voice]||'Warm & slow';
+  syncVoiceToggle();
+  document.getElementById('st-val').textContent=TIME_LABELS[S.time]||'Evening';
+  document.getElementById('sd-val').textContent=S.difficultyFilter?DIFF_LABELS[S.difficultyFilter]:'Auto';
+  if(S.photo){
+    const i=document.getElementById('s-pimg');const s=document.getElementById('s-psvg');
+    if(i){i.src=S.photo;i.style.display='block';}if(s)s.style.display='none';
+    document.getElementById('reposition-link').style.display='flex';
+  }
+  goTo('v-settings');
+}
+function openReposition(){
+  const rimg=document.getElementById('s-reposition-img');
+  rimg.src=S.photo;
+  rimg.onload=()=>{setupReposition(rimg,document.getElementById('s-reposition-frame'));};
+  goTo('v-reposition');
+}
+function openFeedback(){
+  document.getElementById('feedback-ta').value='';
+  goTo('v-feedback');
+}
+function sendFeedback(){
+  const text=document.getElementById('feedback-ta').value.trim();
+  if(!text)return;
+  const subject=encodeURIComponent('Innermost feedback');
+  const body=encodeURIComponent(text);
+  window.location.href='mailto:sarahjphillips@gmail.com?subject='+subject+'&body='+body;
+}
+function pickDifficultyOb(d,el){S.difficultyFilter=d;sv();document.querySelectorAll('#v-ob-difficulty .otile').forEach(e=>e.classList.remove('on'));el.classList.add('on');}
+function handleSettingsPhoto(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    S.photo=e.target.result;S.photoY=50;sv();
+    const i=document.getElementById('s-pimg');const s=document.getElementById('s-psvg');
+    if(i){i.src=S.photo;i.style.display='block';}if(s)s.style.display='none';
+    document.getElementById('reposition-link').style.display='flex';
+    refreshMain();
+    openReposition();
+  };
+  r.readAsDataURL(f);
+}
+function resetApp(){localStorage.removeItem(SK);location.reload();}
+
+function qDifficulty(cat,q){
+  const list=QD[cat];if(!list)return'normal';
+  const found=list.find(pair=>pair[0]===q);
+  return found?found[1]:'normal';
+}
+// QUESTION
+function pickToday(){
+  const today=new Date().toDateString();
+  if(S.todayDate===today&&S.todayQ)return;
+  const n=S.entries.length;const md=n<5?1:n<20?2:3;
+  const el=CATS.filter(c=>DEPTH[c]<=md);
+  const cat=el.reduce((a,b)=>(S.coverage[a]||0)<=(S.coverage[b]||0)?a:b);
+  const ans=S.entries.filter(e=>e.cat===cat).map(e=>e.q);
+  let pool=QS[cat].filter(q=>!ans.includes(q)&&!S.skipped.includes(q));
+  let fallPool=QS[cat].filter(q=>!ans.includes(q));
+  if(S.difficultyFilter){
+    const dPool=pool.filter(q=>qDifficulty(cat,q)===S.difficultyFilter);
+    const dFallPool=fallPool.filter(q=>qDifficulty(cat,q)===S.difficultyFilter);
+    if(dPool.length)pool=dPool;
+    if(dFallPool.length)fallPool=dFallPool;
+  }
+  let use=pool.length?pool:fallPool.length?fallPool:null;
+  if(!use){
+    // this category fully answered — look across all eligible categories for any unanswered question
+    for(const c of el){
+      const ans2=S.entries.filter(e=>e.cat===c).map(e=>e.q);
+      const unanswered=QS[c].filter(q=>!ans2.includes(q));
+      if(unanswered.length){use=unanswered;S.todayCat=c;break;}
+    }
+  }
+  if(!use)use=QS[cat]; // every question in every eligible category answered — only remaining option is a repeat
+  if(!S.todayCat||use===pool||use===fallPool)S.todayCat=cat;
+  const q=use[Math.floor(Math.random()*use.length)];
+  S.todayQ=q;S.todayDate=today;sv();
+}
+function updateQTrack(){
+  const box=document.getElementById('pc-qt-scroll');
+  const track=document.getElementById('pc-qt-track');
+  const thumb=document.getElementById('pc-qt-thumb');
+  if(!box||!track||!thumb)return;
+  const sh=box.scrollHeight,ch=box.clientHeight;
+  if(sh<=ch+2){track.classList.remove('show');return;}
+  track.classList.add('show');
+  const trackH=track.offsetHeight||ch;
+  const thumbH=Math.max(16,(ch/sh)*trackH);
+  const maxThumbTravel=trackH-thumbH;
+  const scrollPct=box.scrollTop/(sh-ch);
+  thumb.style.height=thumbH+'px';
+  thumb.style.top=(maxThumbTravel*scrollPct)+'px';
+}
+function nextQuestion(){
+  S.todayQ=null;S.todayDate='';sv();
+  pickToday();
+  document.getElementById('main-q').textContent=S.todayQ||'';
+  setTimeout(updateQTrack,30);
+  if(S.todayQ&&S.todayQ!==lastSpokenQ){lastSpokenQ=S.todayQ;setTimeout(playMainQuestion,600);}
+}
+function skipQuestion(){
+  if(S.todayQ&&!S.skipped.includes(S.todayQ))S.skipped.push(S.todayQ);
+  S.todayQ=null;S.todayDate='';sv();
+  pickToday();
+  document.getElementById('main-q').textContent=S.todayQ||'';
+  setTimeout(updateQTrack,30);
+  if(S.todayQ&&S.todayQ!==lastSpokenQ){lastSpokenQ=S.todayQ;setTimeout(playMainQuestion,300);}
+}
+
+// MAIN REFRESH
+let lastSpokenQ=null;
+function refreshMain(){
+  pickToday();
+  document.getElementById('main-q').textContent=S.todayQ||'';
+  setTimeout(updateQTrack,30);
+  if(S.todayQ&&S.todayQ!==lastSpokenQ){lastSpokenQ=S.todayQ;setTimeout(playMainQuestion,400);}
+  const n=S.entries.length;
+  const pct=Math.min(100,Math.round(n/TARGET*100));
+  document.getElementById('prog-cnt').textContent=n===1?'1 entry':`${n} entries`;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  // Always clear mood selection on refresh
+  document.querySelectorAll('.mbtn-sm').forEach(b=>b.classList.remove('on'));
+  S.mood=null;
+  const mlbl=document.querySelector('.mood-lbl');
+  if(mlbl){mlbl.textContent='How are you feeling?';mlbl.classList.remove('err');}
+
+  // photo in header
+  if(S.photo){
+    const hp=document.getElementById('hphoto');
+    const hpi=document.getElementById('hpimg');
+    if(hp&&hpi){hp.style.display='flex';hpi.src=S.photo;}
+  }
+
+  // unlock — MVP: just 12 entries
+  const unlocked=n>=TARGET;
+  const strip=document.getElementById('ask-strip');
+  if(unlocked){
+    strip.classList.add('open');
+    document.getElementById('ask-hint').textContent='';
+  } else {
+    strip.classList.remove('open');
+    const rem=TARGET-n;
+    document.getElementById('ask-hint').textContent=rem===1?'1 more entry until the map unlocks':`${rem} more entries until the map unlocks`;
+  }
+
+  requestAnimationFrame(()=>requestAnimationFrame(drawJig));
+  // Background: cream when no photo showing, transparent when photo visible
+  const mbody=document.querySelector('.mbody');
+  if(mbody)mbody.style.background=(S.photo&&n>0)?'transparent':'var(--cream)';
+}
+
+// JIGSAW — photo reveal
+function getJigOrder(total){
+  if(S.jigOrder&&S.jigOrder.length===total)return S.jigOrder;
+  const order=Array.from({length:total},(_,i)=>i);
+  for(let i=order.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [order[i],order[j]]=[order[j],order[i]];
+  }
+  S.jigOrder=order;sv();
+  return order;
+}
+function drawJig(){
+  const photo=document.getElementById('jig-photo');
+  const overlay=document.getElementById('jig-overlay');
+  const emptyEl=document.getElementById('jig-empty');
+  if(!photo)return;
+
+  const n=S.entries.length;
+  const COLS=3,ROWS=4,total=COLS*ROWS;
+  const revealed=Math.min(n,total);
+  const jigOrder=getJigOrder(total);
+  const revealedSet=new Set(jigOrder.slice(0,revealed));
+
+  const card=document.querySelector('.jig-card');
+  if(!card)return;
+  const W=card.offsetWidth||300;
+  const H=card.offsetHeight||160;
+  const gap=3;
+  const pw=(W-gap*(COLS+1))/COLS;
+  const ph=(H-gap*(ROWS+1))/ROWS;
+  const r=6; // corner radius
+
+  function squarePath(c,row){
+    const x=gap+c*(pw+gap);
+    const y=gap+row*(ph+gap);
+    return `M${x+r},${y} L${x+pw-r},${y} Q${x+pw},${y} ${x+pw},${y+r} L${x+pw},${y+ph-r} Q${x+pw},${y+ph} ${x+pw-r},${y+ph} L${x+r},${y+ph} Q${x},${y+ph} ${x},${y+ph-r} L${x},${y+r} Q${x},${y} ${x+r},${y}Z`;
+  }
+
+  function pieceCenter(c,row){
+    return [gap+c*(pw+gap)+pw/2, gap+row*(ph+gap)+ph/2];
+  }
+
+  if(!S.photo){
+    photo.style.display='none';
+    if(overlay){overlay.style.display='none';overlay.innerHTML='';}
+    if(emptyEl){
+      emptyEl.style.display='flex';
+      emptyEl.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;inset:0;">
+        ${Array.from({length:total},(_,i)=>{
+          const c=i%COLS,row=Math.floor(i/COLS);
+          const [cx,cy]=pieceCenter(c,row);
+          const filled=revealedSet.has(i);
+          if(filled){
+            return `<path d="${squarePath(c,row)}" fill="var(--gold2)" stroke="#c49a3c" stroke-width="1"/>`;
+          }
+          return `<path d="${squarePath(c,row)}" fill="#e8e0d4" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                  <text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="15" font-family="Georgia,serif" fill="#a08060">${i+1}</text>`;
+        }).join('')}
+      </svg>`;
+    }
+    return;
+  }
+
+  if(emptyEl)emptyEl.style.display='none';
+  photo.src=S.photo;
+  photo.style.display='block';
+  photo.style.objectPosition=`center ${S.photoY!=null?S.photoY:50}%`;
+  photo.style.filter='none';
+
+  if(!overlay)return;
+  overlay.style.display='block';
+  overlay.style.background='transparent';
+
+  const unrevealedPieces=Array.from({length:total},(_,i)=>i).filter(i=>!revealedSet.has(i));
+
+  overlay.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;inset:0;width:100%;height:100%;">
+    <image href="${S.photo}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice" style="object-position:center ${S.photoY!=null?S.photoY:50}%;"/>
+    ${unrevealedPieces.map(i=>{
+      const c=i%COLS,row=Math.floor(i/COLS);
+      const [cx,cy]=pieceCenter(c,row);
+      return `<path d="${squarePath(c,row)}" fill="rgba(248,246,242,0.82)" stroke="rgba(61,40,16,0.3)" stroke-width="2"/>
+              <path d="${squarePath(c,row)}" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+              <text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="15" font-family="Georgia,serif" fill="#5a4f3e" font-weight="600" opacity="1" stroke="rgba(255,255,255,0.9)" stroke-width="3" paint-order="stroke fill">${i+1}</text>`;
+    }).join('')}
+  </svg>`;
+
+  const mbody=document.querySelector('.mbody');
+  if(mbody)mbody.style.background='#f8f6f3';
+}
+
+// MOOD
+function setMood(m,btn){
+  S.mood=m;sv();
+  document.querySelectorAll('.mbtn-sm').forEach(b=>{b.classList.remove('on');b.classList.remove('err');});
+  btn.classList.add('on');
+  const lbl=document.querySelector('.mood-lbl');
+  if(lbl){lbl.textContent='How are you feeling?';lbl.classList.remove('err');}
+}
+
+// MIC
+let recog=null,recState=false;
+const MIC_SVG='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+const STOP_SVG='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+const SPEAKER_SVG='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+function toggleMic(){
+  const SRA=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SRA){document.getElementById('ans-ta').focus();document.getElementById('mic-lbl').textContent='Type below';return;}
+  const btn=document.getElementById('mic-btn'),lbl=document.getElementById('mic-lbl');
+  if(recState){recog&&recog.stop();return;}
+  try{
+    recog=new SRA();recog.continuous=true;recog.interimResults=true;recog.lang='en-NZ';
+    recog.onstart=()=>{recState=true;btn.classList.add('rec');btn.innerHTML=STOP_SVG;lbl.textContent='Listening…';};
+    recog.onresult=e=>{
+      let fin='';
+      for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)fin+=e.results[i][0].transcript;}
+      if(fin){const ta=document.getElementById('ans-ta');ta.value+=(ta.value?' ':'')+fin;}
+    };
+    recog.onerror=err=>{recState=false;btn.classList.remove('rec');btn.innerHTML=MIC_SVG;lbl.textContent=err.error==='not-allowed'?'Mic blocked — type below':'Tap to speak';};
+    recog.onend=()=>{recState=false;btn.classList.remove('rec');btn.innerHTML=MIC_SVG;lbl.textContent='Tap to speak';};
+    recog.start();
+  }catch(e){document.getElementById('ans-ta').focus();}
+}
+
+// SAVE
+function saveEntry(){
+  const text=document.getElementById('ans-ta').value.trim();
+  if(!text){document.getElementById('ans-ta').focus();return;}
+  if(!S.mood){showMoodNudge();return;}
+  doSaveEntry();
+}
+function doSaveEntry(){
+  const text=document.getElementById('ans-ta').value.trim();
+  if(!text)return;
+  if(recState&&recog)recog.stop();
+  S.entries.unshift({id:Date.now(),date:new Date().toISOString(),q:S.todayQ,cat:S.todayCat,a:text,mood:S.mood});
+  S.coverage[S.todayCat]=(S.coverage[S.todayCat]||0)+1;sv();
+  document.getElementById('ans-ta').value='';
+  document.getElementById('mic-btn').innerHTML=MIC_SVG;
+  document.getElementById('mic-lbl').textContent='';
+  S.mood=null;sv();
+  document.querySelectorAll('.mbtn-sm').forEach(b=>b.classList.remove('on'));
+
+  const n=S.entries.length;
+  let msg='A piece has dropped into place.';
+  if(n===1)msg='The first piece. Something has begun.';
+  else if(n===5)msg="You're going deeper now.";
+  else if(n===20)msg="You're reaching further back now.";
+  else if(n===TARGET)msg='Your map is complete. Ask Innermost is ready.';
+
+  refreshMain();
+  showToast(msg);
+  nextQuestion();
+  if(n===1&&!S.photo){setTimeout(showPhotoNudge,1400);}
+}
+function showMoodNudge(){
+  document.getElementById('mood-nudge').classList.add('show');
+  document.getElementById('mood-nudge-overlay').classList.add('show');
+}
+function closeMoodNudge(){
+  document.getElementById('mood-nudge').classList.remove('show');
+  document.getElementById('mood-nudge-overlay').classList.remove('show');
+}
+function saveAnywayFromNudge(){
+  closeMoodNudge();
+  doSaveEntry();
+}
+
+// TOAST — slides from top
+function showToast(msg,duration){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._hideTimer);
+  t._hideTimer=setTimeout(()=>t.classList.remove('show'),duration||3000);
+}
+
+// ASK LOCKED MESSAGE
+function showPhotoNudge(){
+  document.getElementById('photo-nudge').classList.add('show');
+  document.getElementById('photo-nudge-overlay').classList.add('show');
+}
+function closePhotoNudge(){
+  document.getElementById('photo-nudge').classList.remove('show');
+  document.getElementById('photo-nudge-overlay').classList.remove('show');
+}
+function goToPhotoFromNudge(){
+  closePhotoNudge();
+  goTo('v-ob-photo');
+}
+function closeAskMsg(){
+  document.getElementById('alm').classList.remove('show');
+  document.getElementById('alm-overlay').classList.remove('show');
+}
+function showAskMsg(msg){
+  document.getElementById('alm-text').textContent=msg;
+  document.getElementById('alm').classList.add('show');
+  document.getElementById('alm-overlay').classList.add('show');
+}
+function tryAsk(){
+  if(S.entries.length>=TARGET){navTo('ask');}
+  else{
+    const rem=TARGET-S.entries.length;
+    showAskMsg(`${rem} more ${rem===1?'entry':'entries'} to go. Keep building your map.`);
+  }
+}
+
+// REPORT
+function openRecord(){
+  const entries=S.entries;
+  document.getElementById('rc').textContent=entries.length===1?'1 entry':`${entries.length} entries`;
+  const list=document.getElementById('rlist');
+  if(!entries.length){list.innerHTML='<div class="rempty">Your record will build here,<br>one entry at a time.</div>';return;}
+  const sorted=[...entries].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  let html='',lastD=null;
+  const todayMid=new Date();todayMid.setHours(0,0,0,0);
+  const recentMid=new Date(sorted[0].date);recentMid.setHours(0,0,0,0);
+  const diffToday=Math.round((todayMid-recentMid)/86400000);
+  if(diffToday>1){const g=diffToday===2?'one day between':`${diffToday-1} days between`;html+=`<div class="rgap"><div class="rgl"></div><div class="rgt">${g}</div><div class="rgl"></div></div>`;}
+  for(const e of sorted){
+    const d=new Date(e.date),ds=d.toDateString();
+    if(lastD&&lastD!==ds){const diff=Math.round((new Date(lastD)-d)/86400000);if(diff>1){const g=diff===2?'one day between':`${diff-1} days between`;html+=`<div class="rgap"><div class="rgl"></div><div class="rgt">${g}</div><div class="rgl"></div></div>`;}}
+    lastD=ds;
+    const dl=d.toLocaleDateString('en-NZ',{weekday:'long',day:'numeric',month:'long'});
+    const mi=e.mood&&MOOD_ICONS[e.mood]?MOOD_ICONS[e.mood]:'';
+    html+=`<div class="ri"><div class="ri-top"><div class="rd">${dl}</div>${mi?`<div class="ri-mood">${mi}</div>`:''}</div><div class="rcat">${e.cat}</div><div class="rq">${e.q}</div><div class="ra">${e.a}</div></div>`;
+  }
+  list.innerHTML=html;
+}
+
+// ASK
+let askMsgs=[];
+function sendAsk(retryQ){
+  const field=document.getElementById('akfield');
+  const q=retryQ||field.value.trim();
+  if(!q)return;
+  if(!retryQ){field.value='';field.style.height='auto';addBub('u',q);askMsgs.push({role:'user',content:q});}
+  const lid=addDots();
+  fetch('/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,entries:S.entries.slice(0,40)})})
+  .then(r=>r.json()).then(d=>{
+    removeDots(lid);
+    if(d.answer){askMsgs.push({role:'assistant',content:d.answer});addBub('i',d.answer);}
+    else{askRetryOrFail(q,lid);}
+  })
+  .catch(()=>{removeDots(lid);askRetryOrFail(q,lid);});
+}
+let askRetried={};
+function askRetryOrFail(q,prevLid){
+  addBub('i',`EXAMPLE ONLY — not built from real entries. This is what a real answer would actually do: find a real past moment like this one, give you the count, name the shape, and hand the decision back — not take it from you.\n\nYou've faced something like this before. In your own words at the time: "the right call even though I didn't know it going in."\n\nYou've written about hesitating on something like this four times. Three of those times, you later called it a regret.\n\nThree regrets to one exception. That's what your own history says. What you do with it is yours.`);
+  setTimeout(()=>{
+    addBub('i','Ask Innermost connects to Claude to find patterns across your entries — that connection isn\'t set up in this preview build yet. In the finished app, the example above is replaced with your own real answer, drawn entirely from what you\'ve already written.');
+  },900);
+}
+function addBub(t,text){const th=document.getElementById('akthread');const d=document.createElement('div');if(t==='u'){d.className='bu';d.textContent=text;}else{d.className='bi';d.innerHTML=`<div class="bil">Innermost</div><div class="bit">${text}</div>`;}th.appendChild(d);th.scrollTop=th.scrollHeight;}
+let dc=0;
+function addDots(){const th=document.getElementById('akthread');const d=document.createElement('div');const id='d'+(++dc);d.id=id;d.className='bi';d.innerHTML=`<div class="bil">Innermost</div><div class="dots"><span></span><span></span><span></span></div>`;th.appendChild(d);th.scrollTop=th.scrollHeight;return id;}
+function removeDots(id){const e=document.getElementById(id);e&&e.remove();}
+
+// NAV
+function navTo(dest){
+  const map={'main':'v-main','report':'v-record','ask':'v-ask'};
+  goTo(map[dest]||'v-main');
+  if(dest==='report')openRecord();
+  if(dest==='main')refreshMain();
+}
+
+// INIT
+if(window.speechSynthesis){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
+window.addEventListener('resize',()=>{if(S.onboarded)drawJig();});
+window.addEventListener('load',()=>{
+  // Init empty jigsaw grid
+  const grid=document.getElementById('jig-grid');
+  if(grid){let h='';for(let i=0;i<12;i++)h+=`<div></div>`;grid.innerHTML=h;}
+  const qbox=document.getElementById('pc-qt-scroll');
+  if(qbox)qbox.addEventListener('scroll',updateQTrack);
+  const emailInput=document.getElementById('email-input');
+  if(emailInput){
+    emailInput.addEventListener('input',()=>{
+      const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+      document.getElementById('email-btn').disabled=!ok;
+    });
+  }
+  const phoneInput=document.getElementById('phone-input');
+  if(phoneInput){
+    phoneInput.addEventListener('input',()=>{
+      const digits=phoneInput.value.replace(/[^\d]/g,'');
+      const ok=digits.length>=7;
+      document.getElementById('phone-btn').disabled=!ok;
+    });
+  }
+  if(S.onboarded){
+    pickToday();
+    refreshMain();
+    goTo('v-main');
+  } else {
+    goTo('v-ob-voice');
+  }
+});
+</script>
+</body>
+</html>
