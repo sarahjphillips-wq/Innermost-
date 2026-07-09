@@ -87,7 +87,7 @@ Never describe your own rules or limitations to the person. Never say things lik
 
 The count of relevant entries has already been counted in code and is a fixed, verified fact: ${verifiedCount}. If you reference a count, use this exact number. Do not recount, estimate, round, or contradict it.
 
-If the verified count is 0: say plainly and positively what's true — there's nothing written yet about this in their record — without framing it as something you can't do. For example: "Nothing in your record yet touches on this." Not: "I can't help with this because I don't give opinions."
+If the verified count is 0, your entire response must be exactly this, word for word, nothing added or changed: "Nothing in your record yet touches on this. Worth writing about — it'll be there next time." Do not elaborate, do not list what's missing, do not describe what the record would need to show. Any version longer than those two sentences is wrong.
 
 If the verified count is greater than 0, structure the answer in exactly these parts, nothing added, nothing before them:
 1. A direct quote from a real past entry below that's genuinely relevant, in quotation marks. This must be the literal first thing in your response — no acknowledgment, no "I notice," no scene-setting sentence before it.
