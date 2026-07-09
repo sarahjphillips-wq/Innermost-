@@ -48,7 +48,11 @@ export async function onRequestPost(context) {
 
 async function findRelevantIndices(apiKey, question, indexed) {
   const list = indexed.map((e) => `[${e.i}] (${e.cat}) Q: ${e.q}\nA: ${e.a}`).join('\n\n');
-  const sys = `You are a relevance filter for a personal journaling app. Given a question and a list of journal entries, return ONLY a JSON array of the integer indices of entries that are genuinely relevant to the question — entries that speak to the same pattern, situation, or feeling being asked about. No prose, no markdown, no explanation. Example: [2,7,9]. If nothing is relevant, return [].`;
+  const sys = `You are a relevance filter for a personal journaling app called Innermost. Its core principle: this is pattern retrieval, not record retrieval. You are not searching for entries that mention the same topic or keyword as the question — you are finding entries that reveal the same underlying trait, tendency, or behaviour the question is really about, even if the entry is about a completely different subject on the surface.
+
+Example: if the question is about whether to ask someone out, relevant entries are not just ones that mention dating — they include any entry that shows how this person moves toward or away from people, handles risk, handles fear, handles connection, or acts on impulse versus hesitates. An entry about laughing alone, or a stranger noticing something was wrong, or taking a leap on something unrelated, can all be genuinely relevant if they reveal that same underlying pattern.
+
+Read every entry and ask: does this reveal something about the trait or tendency behind the question, regardless of surface topic? Return ONLY a JSON array of the integer indices of entries that pass that test. No prose, no markdown, no explanation. Example: [2,7,9]. If truly nothing reveals anything relevant to the underlying pattern, return [].`;
   const userContent = `Question: ${question}\n\nEntries:\n${list}`;
   const text = await callClaude(apiKey, sys, userContent, 400);
   return parseIndexArray(text, indexed.length);
