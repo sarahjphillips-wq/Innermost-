@@ -109,6 +109,7 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
 .tag-chip.on{border-color:var(--taggrey);background:var(--taggrey);color:white;font-weight:600;}
 .ri-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
 .ri-tag{font-size:0.62rem;color:var(--taggrey);background:#f4f4f2;border:1px solid var(--cream3);border-radius:12px;padding:2px 9px;}
+.ri-trait{font-size:0.62rem;color:var(--gold);background:rgba(196,154,60,0.1);border:1px solid rgba(196,154,60,0.35);border-radius:12px;padding:2px 9px;font-weight:600;}
 .ri-actions{display:flex;gap:10px;margin-top:8px;}
 .ri-action-btn{background:none;border:none;font-size:0.68rem;color:var(--babyblue);font-weight:600;cursor:pointer;padding:2px 0;}
 .ri-action-btn.danger{color:#c0554a;}
@@ -509,28 +510,27 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
       </div>
     </div>
 
-    <div class="prompt-card" style="margin-top:2px;">
-      <div class="mood-lbl">Tag it — pick at least one</div>
-      <div class="tag-row" id="tag-row">
-        <button class="tag-chip" data-tag="Work" onclick="toggleTag('Work',this)">Work</button>
-        <button class="tag-chip" data-tag="Family" onclick="toggleTag('Family',this)">Family</button>
-        <button class="tag-chip" data-tag="Friends" onclick="toggleTag('Friends',this)">Friends</button>
-        <button class="tag-chip" data-tag="Health" onclick="toggleTag('Health',this)">Health</button>
-        <button class="tag-chip" data-tag="Home" onclick="toggleTag('Home',this)">Home</button>
-        <button class="tag-chip" data-tag="Hobbies" onclick="toggleTag('Hobbies',this)">Hobbies</button>
-        <button class="tag-chip" data-tag="Travel" onclick="toggleTag('Travel',this)">Travel</button>
-        <button class="tag-chip" data-tag="Money" onclick="toggleTag('Money',this)">Money</button>
-        <button class="tag-chip" data-tag="Self" onclick="toggleTag('Self',this)">Self</button>
-        <button class="tag-chip" data-tag="Community" onclick="toggleTag('Community',this)">Community</button>
-      </div>
-    </div>
-
     <button class="more-toggle" id="more-toggle" onclick="toggleMore()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      Answer a prompt (optional)
+      Tag it or answer a prompt (optional)
     </button>
 
     <div class="more-panel" id="more-panel">
+      <div class="prompt-card" style="margin-top:2px;">
+        <div class="mood-lbl">Tag it</div>
+        <div class="tag-row" id="tag-row">
+          <button class="tag-chip" data-tag="Work" onclick="toggleTag('Work',this)">Work</button>
+          <button class="tag-chip" data-tag="Family" onclick="toggleTag('Family',this)">Family</button>
+          <button class="tag-chip" data-tag="Friends" onclick="toggleTag('Friends',this)">Friends</button>
+          <button class="tag-chip" data-tag="Health" onclick="toggleTag('Health',this)">Health</button>
+          <button class="tag-chip" data-tag="Home" onclick="toggleTag('Home',this)">Home</button>
+          <button class="tag-chip" data-tag="Hobbies" onclick="toggleTag('Hobbies',this)">Hobbies</button>
+          <button class="tag-chip" data-tag="Travel" onclick="toggleTag('Travel',this)">Travel</button>
+          <button class="tag-chip" data-tag="Money" onclick="toggleTag('Money',this)">Money</button>
+          <button class="tag-chip" data-tag="Self" onclick="toggleTag('Self',this)">Self</button>
+          <button class="tag-chip" data-tag="Community" onclick="toggleTag('Community',this)">Community</button>
+        </div>
+      </div>
       <div class="pc-qt-wrap" style="margin-top:4px;">
         <div class="pc-qt-scroll" id="pc-qt-scroll">
           <div class="pc-lbl" style="font-size:0.78rem; letter-spacing:0.02em; text-transform:none; opacity:0.9;">You can answer this if you're stuck — totally optional.</div>
@@ -604,10 +604,11 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Everything is stored locally, in your browser's storage on your own device. It is not uploaded to a server or database we control. If you clear your browser data, reset the app, or switch devices, your entries do not transfer on their own — there is no automatic cloud backup. You can export your entries to a file yourself and restore them on another device.</p>
 
     <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">When we send data elsewhere</h3>
-    <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Two features send text to Anthropic (the company behind Claude, the AI Innermost uses):</p>
+    <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Three features send text to Anthropic (the company behind Claude, the AI Innermost uses):</p>
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:8px;">• <strong>Ask Innermost</strong> — your question and relevant saved entries are sent to generate an answer.</p>
-    <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">• <strong>Safety check</strong> — what you write is briefly checked for language suggesting risk of self-harm, so we can show you support resources if needed. This check does not store your text afterward, and if it flags something, that specific entry is not saved.</p>
-    <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Outside of these two features, nothing you write is sent anywhere. We don't use analytics or ad tracking, and we don't sell or share your information with any third party for marketing.</p>
+    <p style="font-size:0.84rem;line-height:1.6;margin-bottom:8px;">• <strong>Safety check</strong> — what you write is briefly checked for language suggesting risk of self-harm, so we can show you support resources if needed. This check does not store your text afterward, and if it flags something, that specific entry is not saved.</p>
+    <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">• <strong>Pattern tagging</strong> — each entry you save is briefly checked to see whether it shows a trait like courage or connection, so Ask Innermost can find it later. This happens automatically after saving, in the background. The tag itself (or no tag, if none applies) is stored with the entry on your device; the check does not keep a copy of your text afterward.</p>
+    <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Outside of these three features, nothing you write is sent anywhere. We don't use analytics or ad tracking, and we don't sell or share your information with any third party for marketing.</p>
 
     <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">If your entry suggests you may be at risk</h3>
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">If what you write suggests you may be thinking about suicide or self-harm, Innermost shows you crisis support resources (in New Zealand: call or text 1737, free, 24/7; emergency: 111). That entry is not saved to your record. This check is automated and is not a substitute for professional care.</p>
@@ -657,19 +658,22 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
     <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">6. Ask Innermost</h3>
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">When you use Ask Innermost, your question and relevant saved entries are sent to Anthropic's Claude AI to generate a response. Responses are generated automatically and may be incomplete, miss relevant entries, or occasionally be wrong. Ask Innermost does not give advice, medical guidance, or professional opinions — it reflects back your own words.</p>
 
-    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">7. Acceptable use</h3>
+    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">7. Pattern tagging</h3>
+    <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Each entry you save is automatically and briefly checked to see whether it shows a small number of specific traits, so that Ask Innermost can find it later when it's relevant. This happens in the background after saving and does not change or delay the save itself. This check may occasionally miss a trait an entry does show, or not apply one at all — most entries won't show any of these traits, and that's expected.</p>
+
+    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">8. Acceptable use</h3>
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Please don't use Innermost to store other people's private information without their knowledge, to harass or harm anyone, or for any unlawful purpose.</p>
 
-    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">8. No warranty</h3>
+    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">9. No warranty</h3>
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Innermost is provided "as is," without warranty of any kind. We do not guarantee it will be error-free, uninterrupted, or fit for any particular purpose.</p>
 
-    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">9. Limitation of liability</h3>
+    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">10. Limitation of liability</h3>
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">To the fullest extent permitted by law, Innermost and its creator are not liable for any loss, damage, or harm arising from your use of the app, including loss of data or reliance on any automated response.</p>
 
-    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">10. Changes to these terms</h3>
+    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">11. Changes to these terms</h3>
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">If these terms change in a meaningful way, we'll update the date at the top of this page.</p>
 
-    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">11. Contact</h3>
+    <h3 style="font-family:var(--serif);font-size:1rem;color:var(--brown);margin-bottom:6px;">12. Contact</h3>
     <p style="font-size:0.84rem;line-height:1.6;margin-bottom:16px;">Questions about these terms can be sent through the Report a Problem option in Settings.</p>
   </div>
 </div>
@@ -1538,11 +1542,6 @@ function saveEntry(){
     showToast('Pick a mood to save.');
     return;
   }
-  if(selectedTags.length===0){
-    document.getElementById('tag-row').scrollIntoView({behavior:'smooth',block:'center'});
-    showToast('Pick at least one tag to save.');
-    return;
-  }
   doSaveEntry();
 }
 function doSaveEntry(){
@@ -1563,7 +1562,7 @@ function doSaveEntry(){
   }
   if(recState&&recog)recog.stop();
   const savedEntryId=Date.now();
-  S.entries.unshift({id:savedEntryId,date:new Date().toISOString(),q:S.todayQ,cat:S.todayCat,a:text,mood:S.mood,tags:selectedTags.slice()});
+  S.entries.unshift({id:savedEntryId,date:new Date().toISOString(),q:S.todayQ,cat:S.todayCat,a:text,mood:S.mood,tags:selectedTags.slice(),trait:null});
   S.coverage[S.todayCat]=(S.coverage[S.todayCat]||0)+1;sv();
   document.getElementById('ans-ta').value='';
   document.getElementById('mic-btn').innerHTML=MIC_SVG;
@@ -1582,6 +1581,28 @@ function doSaveEntry(){
   // or indirect language the instant regex above couldn't. If it flags
   // something after the fact, the entry is removed and never kept.
   checkCrisisSecondLayer(savedEntryId, text);
+
+  // Silent, background-only: figure out whether this entry shows one of the
+  // five traits Ask Innermost can search on. Never blocks the save, never
+  // shown to the person, never retried or surfaced if it fails.
+  classifyEntry(savedEntryId, text);
+}
+async function classifyEntry(entryId, text){
+  try{
+    const res=await fetch('/classify',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text})
+    });
+    if(!res.ok)return; // no live backend here — entry stays saved, just untagged
+    const data=await res.json();
+    const entry=S.entries.find(e=>e.id===entryId);
+    // entry may be gone already if the crisis check above removed it — that
+    // path always wins, a trait is never attached to a removed entry.
+    if(entry&&data.trait){entry.trait=data.trait;sv();}
+  }catch(e){
+    // no live backend here — entry stays saved, just untagged
+  }
 }
 async function checkCrisisSecondLayer(entryId, text){
   try{
@@ -1693,7 +1714,8 @@ function openRecord(){
     const dl=d.toLocaleDateString('en-NZ',{weekday:'long',day:'numeric',month:'long'});
     const tl=d.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'});
     const mi=e.mood&&MOOD_ICONS[e.mood]?MOOD_ICONS[e.mood]:'';
-    const tagsHtml=(e.tags&&e.tags.length)?`<div class="ri-tags">${e.tags.map(t=>`<span class="ri-tag">${esc(t)}</span>`).join('')}</div>`:'';
+    const traitHtml=e.trait?`<span class="ri-trait">${esc(e.trait)}</span>`:'';
+    const tagsHtml=(e.tags&&e.tags.length)||traitHtml?`<div class="ri-tags">${traitHtml}${(e.tags||[]).map(t=>`<span class="ri-tag">${esc(t)}</span>`).join('')}</div>`:'';
     html+=`<div class="ri" id="entry-${Number(e.id)}"><div class="ri-top"><div class="rd">${dl} · ${tl}</div>${mi?`<div class="ri-mood">${mi}</div>`:''}</div>
       <div class="ra" id="ra-${Number(e.id)}">${esc(e.a)}</div>${tagsHtml}
       <div class="ri-actions">
