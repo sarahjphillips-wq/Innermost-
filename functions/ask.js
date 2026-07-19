@@ -2,6 +2,11 @@ const CRISIS_PATTERN = /\b(kill(ing)?\s*my\s*self|suicide|suicidal|end(ing)?\s*(
 
 const MODEL = 'claude-haiku-4-5-20251001';
 
+// Kept identical to the list in classify.js -- these are the only labels an
+// entry can ever carry, so this is also the only vocabulary a question can
+// be matched against.
+const TRAITS = ['Courage', 'Connection', 'Capability', 'Recovery', 'Self-trust'];
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   let body;
@@ -26,12 +31,25 @@ export async function onRequestPost(context) {
   }
 
   const list = (Array.isArray(entries) ? entries : []).slice(0, 60);
-  const indexed = list.map((e, i) => ({ i, cat: e.cat || '', q: e.q || '', a: e.a || '' }));
+  const indexed = list.map((e, i) => ({ i, cat: e.cat || '', q: e.q || '', a: e.a || '', trait: e.trait || null, mood: e.mood || '', tags: e.tags || [] }));
 
   try {
-    const relevantIndices = indexed.length
+    let relevantIndices = indexed.length
       ? await findRelevantIndices(env.ANTHROPIC_API_KEY, question, indexed)
       : [];
+
+    // Trait matching is a second, independent pass. It is deterministic --
+    // once we know which trait the question is fundamentally about, matching
+    // entries already carrying that label is a plain JS filter, not a guess.
+    // This is what lets a genuinely relevant entry surface even when its raw
+    // wording gives the text-search step nothing obvious to go on.
+    if (indexed.length) {
+      const questionTrait = await getQuestionTrait(env.ANTHROPIC_API_KEY, question);
+      if (questionTrait) {
+        const traitIndices = indexed.filter((e) => e.trait === questionTrait).map((e) => e.i);
+        relevantIndices = Array.from(new Set([...relevantIndices, ...traitIndices]));
+      }
+    }
 
     const verifiedCount = relevantIndices.length;
     const relevantEntries = relevantIndices.map((i) => indexed[i]).filter(Boolean);
@@ -47,17 +65,44 @@ export async function onRequestPost(context) {
 }
 
 async function findRelevantIndices(apiKey, question, indexed) {
-  const list = indexed.map((e) => `[${e.i}] (${e.cat}) Q: ${e.q}\nA: ${e.a}`).join('\n\n');
+  const list = indexed.map((e) => `[${e.i}] (${e.cat}, mood: ${e.mood || 'none'}, tags: ${(e.tags || []).join(', ') || 'none'}) Q: ${e.q}\nA: ${e.a}`).join('\n\n');
   const sys = [
     `You are a relevance filter for a personal journaling app called Innermost. Its core principle: this is pattern retrieval, not record retrieval. You are not searching for entries that mention the same topic or keyword as the question -- you are finding entries that reveal the same underlying trait, tendency, or behaviour the question is really about, even if the entry is about a completely different subject on the surface.`,
     ``,
     `Example: if the question is about whether to ask someone out, relevant entries are not just ones that mention dating -- they include any entry that shows how this person moves toward or away from people, handles risk, handles fear, handles connection, or acts on impulse versus hesitates. An entry about laughing alone, or a stranger noticing something was wrong, or taking a leap on something unrelated, can all be genuinely relevant if they reveal that same underlying pattern.`,
+    ``,
+    `Each entry also carries a mood and optional tags the person chose at the time of writing. Use these as extra context for judging relevance -- they can support or complicate a reading of the words, but never treat a shared mood or tag alone as a match. The words are still what the entry is actually about.`,
     ``,
     `Read every entry and ask: does this reveal something about the trait or tendency behind the question, regardless of surface topic? Return ONLY a JSON array of the integer indices of entries that pass that test. No prose, no markdown, no explanation. Example: [2,7,9]. If truly nothing reveals anything relevant to the underlying pattern, return [].`
   ].join('\n');
   const userContent = `Question: ${question}\n\nEntries:\n${list}`;
   const text = await callClaude(apiKey, sys, userContent, 400);
   return parseIndexArray(text, indexed.length);
+}
+
+// Deciding what the question is fundamentally about is a separate, much
+// smaller judgment than searching entries -- one word out of five, or none.
+// Kept as its own call so a wrong or missing answer here never affects the
+// text-search step above; the two results are only ever combined, never
+// substituted for each other.
+async function getQuestionTrait(apiKey, question) {
+  const sys = [
+    `A person is about to ask a self-knowledge app a question, in a moment of self-doubt. Decide which single trait, if any, their question is fundamentally about needing evidence of.`,
+    ``,
+    `The five traits:`,
+    `Courage -- doing something despite fear, discomfort, or resistance.`,
+    `Connection -- reaching toward another person, or being reached toward, and it mattering.`,
+    `Capability -- proving you can handle something -- solving, finishing, showing skill.`,
+    `Recovery -- getting something wrong or struggling, and coming through it okay.`,
+    `Self-trust -- making a decision under uncertainty that felt right, or turned out right.`,
+    ``,
+    `Many questions are not really about any of these -- if the question is not fundamentally about needing evidence of one of these five things, answer none. Do not force a fit.`,
+    ``,
+    `Respond with ONLY one word: Courage, Connection, Capability, Recovery, Self-trust, or none. No punctuation, no explanation.`
+  ].join('\n');
+  const text = await callClaude(apiKey, sys, question, 10);
+  const raw = (text || '').trim();
+  return TRAITS.find((t) => t.toLowerCase() === raw.toLowerCase()) || null;
 }
 
 function parseIndexArray(text, maxLen) {
