@@ -26,7 +26,8 @@ export async function onRequestPost(context) {
   // First line of defence -- regex crisis check, before any API call at all.
   if (CRISIS_PATTERN.test(question)) {
     return new Response(JSON.stringify({
-      answer: "I'm really glad you told me this, even here. This isn't something I can reflect back the way I normally would -- please reach out to someone who can actually help right now. In New Zealand, you can call or text 1737 anytime, free, to talk to a trained counsellor. If you're in immediate danger, call 111."
+      answer: "I'm really glad you told me this, even here. This isn't something I can reflect back the way I normally would -- please reach out to someone who can actually help right now. In New Zealand, you can call or text 1737 anytime, free, to talk to a trained counsellor. If you're in immediate danger, call 111.",
+      crisis: true
     }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   }
 
@@ -54,9 +55,19 @@ export async function onRequestPost(context) {
     const verifiedCount = relevantIndices.length;
     const relevantEntries = relevantIndices.map((i) => indexed[i]).filter(Boolean);
 
-    const answer = await writeReflection(env.ANTHROPIC_API_KEY, question, relevantEntries, verifiedCount);
+    const rawAnswer = await writeReflection(env.ANTHROPIC_API_KEY, question, relevantEntries, verifiedCount);
 
-    return new Response(JSON.stringify({ answer }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    // Two independent signals, either one is enough to flag crisis --
+    // the marker is the primary, deliberate signal; the phone number check
+    // is a backup net in case the model ever forgets the marker, since that
+    // number should never legitimately appear in an ordinary reflection.
+    const markerHit = rawAnswer.includes('⚑CRISIS⚑');
+    const numberHit = rawAnswer.includes('1737');
+    const isCrisis = markerHit || numberHit;
+    const answer = markerHit ? rawAnswer.replace('⚑CRISIS⚑', '').trim() : rawAnswer;
+
+    const payload = isCrisis ? { answer, crisis: true } : { answer };
+    return new Response(JSON.stringify(payload), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (err) {
     const status = err && err.status ? err.status : 500;
     const message = err && err.status ? err.message : 'Something went wrong.';
@@ -154,7 +165,7 @@ async function writeReflection(apiKey, question, relevantEntries, verifiedCount)
     `Bad example (do not do this either -- vague closing, another real failure): "Two entries in your record, both about other people... The evidence of how you see connection is there." The phrase "the evidence of [anything] is there" or "...is there to sit with" is banned outright -- it says nothing concrete and just trails off. The closing line must name something specific and plain, not gesture at "evidence" in the abstract.`,
     `Good example: "Nobody, I am on my own." -- one entry touches on this. Nothing more.`,
     ``,
-    `Exception -- this overrides every instruction above: if anything in the person's message suggests they may be considering suicide or self-harm, or that they are in crisis, do not do pattern-reflection. Do not quote or reference their journal entries in this reply. Respond with direct, plain warmth, and clearly point them to immediate help: in New Zealand, call or text 1737 anytime to talk to a trained counsellor, free. If there is immediate danger, call 111. Do not stay neutral or detached in this case. This exception matters more than anything else in this prompt.`,
+    `Exception -- this overrides every instruction above: if anything in the person's message suggests they may be considering suicide or self-harm, or that they are in crisis, do not do pattern-reflection. Do not quote or reference their journal entries in this reply. Your response must begin with exactly this marker and nothing before it: ⚑CRISIS⚑ -- followed immediately by direct, plain warmth that clearly points them to immediate help: in New Zealand, call or text 1737 anytime to talk to a trained counsellor, free. If there is immediate danger, call 111. Do not stay neutral or detached in this case. This exception matters more than anything else in this prompt.`,
     ``,
     `Relevant entries:`,
     ctx
