@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Innermost">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <title>Innermost</title>
@@ -747,6 +747,10 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
           <div class="vtoggle" id="push-toggle"><div class="vtoggle-knob"></div></div>
         </div>
       </div>
+      <div style="margin-top:10px;">
+        <div style="font-size:0.68rem;color:var(--dim);margin-bottom:6px;">Send it around...</div>
+        <div class="trait-edit-row" id="time-of-day-row"></div>
+      </div>
       <div class="proto-note" style="margin-top:8px;">"Anything good happen today? Make sure you log it in Innermost." Sent once a day, around your chosen time. On iPhone, this only works once Innermost is added to your Home Screen -- Safari's share button, then "Add to Home Screen."</div>
     </div>
     <div>
@@ -1192,10 +1196,34 @@ function syncVoiceToggle(){
   if(t)t.classList.toggle('on',on);
   if(v)v.textContent=on?'On':'Off';
 }
+function timeChipsHtml(current){
+  return ['morning','afternoon','evening'].map(t=>{
+    const on=(current||'evening')===t;
+    return `<button type="button" class="rcov-chip trait-edit-chip${on?' on':''}" onclick="pickTimeOfDay('${t}')">${on?'<span class="rcov-tick">✓</span>':''}${TIME_LABELS[t]}</button>`;
+  }).join('');
+}
+function syncTimeChips(){
+  const row=document.getElementById('time-of-day-row');
+  if(row)row.innerHTML=timeChipsHtml(S.time);
+}
+async function pickTimeOfDay(t){
+  S.time=t;sv();
+  syncTimeChips();
+  if(S.pushEnabled){
+    try{
+      const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC';
+      await fetch('/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        id:S.pushId, action:'subscribe', subscription:(await (await navigator.serviceWorker.ready).pushManager.getSubscription()).toJSON(),
+        time:S.time, tz
+      })});
+    }catch(e){}
+  }
+}
 function openSettings(){
   document.getElementById('sv-val').textContent=VOICE_LABELS[S.voice]||'Warm & slow';
   syncVoiceToggle();
   syncPushToggle();
+  syncTimeChips();
   document.getElementById('sd-val').textContent=S.difficultyFilter?DIFF_LABELS[S.difficultyFilter]:'Auto';
   if(S.photo){
     const i=document.getElementById('s-pimg');const s=document.getElementById('s-psvg');
