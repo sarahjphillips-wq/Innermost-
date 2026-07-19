@@ -78,7 +78,7 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
 
 /* MAIN SCREEN */
 #v-main{background:#ffffff;overflow:hidden;}
-.mhead{padding:9px 18px 7px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(to bottom,#4fa3c0 0%,var(--babyblue) 55%,#22697f 100%);}
+.mhead{padding:calc(9px + env(safe-area-inset-top)) 18px 7px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(to bottom,#4fa3c0 0%,var(--babyblue) 55%,#22697f 100%);}
 .mbrand{display:flex;align-items:center;gap:9px;}
 .mlogo{font-family:var(--serif);font-weight:600;font-size:1.2rem;letter-spacing:0.14em;text-transform:uppercase;color:#f5f0e8;}
 .mlogsub{font-size:0.56rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,240,232,0.6);margin-top:1px;}
