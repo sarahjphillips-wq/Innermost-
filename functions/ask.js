@@ -32,7 +32,7 @@ export async function onRequestPost(context) {
   }
 
   const list = (Array.isArray(entries) ? entries : []).slice(0, 60);
-  const indexed = list.map((e, i) => ({ i, cat: e.cat || '', q: e.q || '', a: e.a || '', trait: e.trait || null, mood: e.mood || '', tags: e.tags || [] }));
+  const indexed = list.map((e, i) => ({ i, cat: e.cat || '', q: e.q || '', a: e.a || '', trait: e.trait || null, mood: e.mood || '', tags: e.tags || [], person: e.person || '' }));
 
   try {
     let relevantIndices = indexed.length
@@ -76,13 +76,13 @@ export async function onRequestPost(context) {
 }
 
 async function findRelevantIndices(apiKey, question, indexed) {
-  const list = indexed.map((e) => `[${e.i}] (${e.cat}, mood: ${e.mood || 'none'}, tags: ${(e.tags || []).join(', ') || 'none'}) Q: ${e.q}\nA: ${e.a}`).join('\n\n');
+  const list = indexed.map((e) => `[${e.i}] (${e.cat}, mood: ${e.mood || 'none'}, tags: ${(e.tags || []).join(', ') || 'none'}, person: ${e.person || 'none'}) Q: ${e.q}\nA: ${e.a}`).join('\n\n');
   const sys = [
     `You are a relevance filter for a personal journaling app called Innermost. Its core principle: this is pattern retrieval, not record retrieval. You are not searching for entries that mention the same topic or keyword as the question -- you are finding entries that reveal the same underlying trait, tendency, or behaviour the question is really about, even if the entry is about a completely different subject on the surface.`,
     ``,
     `Example: if the question is about whether to ask someone out, relevant entries are not just ones that mention dating -- they include any entry that shows how this person moves toward or away from people, handles risk, handles fear, handles connection, or acts on impulse versus hesitates. An entry about laughing alone, or a stranger noticing something was wrong, or taking a leap on something unrelated, can all be genuinely relevant if they reveal that same underlying pattern.`,
     ``,
-    `Each entry also carries a mood and optional tags the person chose at the time of writing. Use these as extra context for judging relevance -- they can support or complicate a reading of the words, but never treat a shared mood or tag alone as a match. The words are still what the entry is actually about.`,
+    `Each entry also carries a mood, optional tags, and sometimes a specific person's name the person chose at the time of writing. Use these as extra context for judging relevance -- they can support or complicate a reading of the words, but never treat a shared mood, tag, or name alone as a match. The words are still what the entry is actually about.`,
     ``,
     `Read every entry and ask: does this reveal something about the trait or tendency behind the question, regardless of surface topic? Return ONLY a JSON array of the integer indices of entries that pass that test. No prose, no markdown, no explanation. Example: [2,7,9]. If truly nothing reveals anything relevant to the underlying pattern, return [].`
   ].join('\n');
