@@ -132,9 +132,11 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
 .more-toggle svg{width:14px;height:14px;transition:transform 0.2s ease;}
 .more-toggle.open svg{width:11px;height:11px;transform:rotate(45deg);}
 .more-panel{display:none;}
-.more-panel.open{display:block;}
+.more-panel.open{display:block;max-height:340px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .mbtn-sm.on .ml-sm{color:var(--brown);font-weight:500;}
 .prompt-card{background:transparent;border-radius:10px;padding:3px 0 5px 0;flex-shrink:0;border:none;border-bottom:1px solid var(--cream3);margin-bottom:4px;}
+.ps-card{background:white;border:1.5px solid var(--cream3);border-radius:14px;padding:16px 16px 14px;margin-bottom:16px;}
+.ps-why{font-size:0.7rem;color:var(--dim);line-height:1.4;margin:2px 0 12px;}
 .pc-qt-wrap{position:relative;display:flex;gap:6px;align-items:stretch;margin-top:4px;}
 .pc-qt-scroll{max-height:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;flex:1;scrollbar-width:none;}
 .pc-qt-scroll::-webkit-scrollbar{display:none;}
@@ -203,6 +205,30 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
 .askhist-overlay.show{opacity:1;pointer-events:all;}
 .askhist-panel{position:fixed;top:0;right:0;bottom:0;width:86%;max-width:340px;background:var(--cream);z-index:200;transform:translateX(100%);transition:transform 0.25s;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,0.15);}
 .askhist-panel.show{transform:translateX(0);}
+.emoji-panel-head{padding:16px 18px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--cream3);flex-shrink:0;}
+.emoji-panel-title{font-family:var(--serif);font-size:1rem;color:var(--brown);font-weight:600;}
+.emoji-grid{flex:1;overflow-y:auto;padding:16px;display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start;}
+.emoji-cell{width:44px;height:44px;border-radius:50%;background:white;border:1.5px solid var(--cream3);font-size:1.3rem;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.emoji-cell.on{border-color:var(--gold2);background:#fdf8f0;}
+.avatar-preview-btn{width:52px;height:52px;border-radius:50%;background:white;border:1.5px solid var(--cream3);font-size:1.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.quote-cloud-wrap{position:relative;margin:2px 0 26px 0;width:76%;}
+.quote-cloud{position:relative;filter:drop-shadow(0 3px 9px rgba(196,154,60,0.22));}
+.qc-rect{position:relative;background:#fdf8f0;border-radius:20px;padding:16px 18px 13px;}
+.qc-bump{position:absolute;background:#fdf8f0;border-radius:50%;}
+.qc-bump1{width:20px;height:20px;left:8%;top:-10px;}
+.qc-bump2{width:26px;height:26px;left:22%;top:-15px;}
+.qc-bump3{width:23px;height:23px;left:42%;top:-16px;}
+.qc-bump4{width:26px;height:26px;left:62%;top:-15px;}
+.qc-bump5{width:18px;height:18px;left:80%;top:-9px;}
+.qc-label{position:relative;z-index:2;font-size:0.56rem;color:var(--gold);text-align:left;margin-bottom:5px;letter-spacing:0.04em;text-transform:uppercase;}
+.qc-text{position:relative;z-index:2;font-family:var(--serif);font-style:italic;font-size:0.74rem;color:var(--brown);line-height:1.38;text-align:left;}
+.qc-dot{position:absolute;background:#fdf8f0;border:1.5px solid var(--gold2);border-radius:50%;box-shadow:0 2px 4px rgba(196,154,60,0.15);}
+.qc-dot1{width:12px;height:12px;left:22px;bottom:-11px;}
+.qc-dot2{width:8px;height:8px;left:11px;bottom:-18px;}
+.qc-dot3{width:5px;height:5px;left:4px;bottom:-23px;}
+.qc-controls{position:relative;z-index:2;display:flex;justify-content:center;gap:14px;margin-top:9px;}
+.qc-ctrl-btn{width:26px;height:26px;border-radius:50%;background:white;border:1px solid var(--cream3);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.qc-engaged-lbl{position:relative;z-index:2;font-size:0.58rem;color:var(--gold);text-align:left;margin-top:6px;}
 .askhist-head{padding:16px 18px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--cream3);flex-shrink:0;}
 .askhist-title{font-family:var(--serif);font-size:1rem;color:var(--brown);font-weight:600;}
 .askhist-list{flex:1;overflow-y:auto;padding:12px 16px;}
@@ -252,6 +278,7 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
 #v-settings .vcards{gap:8px;}
 .sg-label{font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
 #v-record{background:var(--cream);}
+#v-prompt{background:var(--cream);}
 .rhead{padding:18px 18px 14px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,#4fa3c0 0%,var(--babyblue) 55%,#22697f 100%);}
 .rhead .back-btn svg{stroke:#f5f0e8;}
 .mhead .back-btn svg{stroke:#f5f0e8;}
@@ -259,6 +286,7 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
 .rh{font-family:var(--serif);font-weight:600;font-size:1.5rem;color:#f5f0e8;}
 .rc{font-size:0.64rem;color:#e8e0d0;}
 .rscroll{flex:1;overflow-y:auto;padding:14px 0 20px;}
+#v-prompt .rscroll{display:flex;flex-direction:column;}
 .ri{padding:14px 18px;border-bottom:1px solid var(--cream2);}
 .ri-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}
 .rd{font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);}
@@ -334,6 +362,16 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
   <div class="alm-title">Not yet</div>
   <div class="alm-text" id="alm-text">Keep going. Ask Innermost unlocks once you've saved enough entries.</div>
   <button class="alm-btn" onclick="closeAskMsg()">OK</button>
+</div>
+
+<!-- EMOJI AVATAR PICKER PANEL -->
+<div class="askhist-overlay" id="emoji-overlay" onclick="closeAvatarPicker()"></div>
+<div class="askhist-panel" id="emoji-panel">
+  <div class="emoji-panel-head">
+    <div class="emoji-panel-title">Pick your icon</div>
+    <button class="back-btn" onclick="closeAvatarPicker()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="emoji-grid" id="emoji-grid"></div>
 </div>
 
 <!-- ASK HISTORY PANEL -->
@@ -445,6 +483,9 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
     <button class="back-btn" onclick="goTo('v-ob-welcome')" style="display:flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span style="font-family:var(--sans);font-size:0.85rem;color:var(--mid);">Back</span></button>
     <div class="ob-h" style="margin-top:16px;">What's your name?</div>
     <input type="text" id="name-input" class="email-field" placeholder="Your name" autocapitalize="words">
+    <div style="font-size:0.68rem;color:var(--dim);margin-top:16px;margin-bottom:6px;">Pick a little icon for yourself</div>
+    <button type="button" class="avatar-preview-btn" id="ob-avatar-preview" onclick="openAvatarPicker('ob-avatar-preview')">🙂</button>
+    <div style="font-size:0.62rem;color:var(--dim);margin-top:5px;">Tap to choose</div>
     <div class="proto-note" style="margin-top:20px;">Everything you save stays on this device. Nothing is shared, sold, or visible to anyone else. Only what you ask Ask Innermost is sent to Claude (Anthropic's AI) to generate an answer — your saved entries are not otherwise sent anywhere.</div>
     <div style="margin-top:22px;margin-bottom:22px;display:flex;gap:16px;justify-content:center;">
       <a href="javascript:void(0)" onclick="termsFrom='v-ob-name';goTo('v-terms')" style="color:var(--babyblue);font-size:0.76rem;text-decoration:underline;">Terms of Use</a>
@@ -537,8 +578,19 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
     <div class="screen-fill" id="screen-fill"><img id="screen-fill-img" src="" style="display:none;position:absolute;left:0;right:0;bottom:0;width:100%;height:100vh;object-fit:cover;object-position:center bottom;"></div>
     <div id="forgot-slot"></div>
     <div class="greeting" id="main-greeting" style="font-family:var(--serif);font-size:1.15rem;color:var(--brown);margin:4px 0 10px 0;"></div>
+    <div id="main-quote-slot"></div>
     <div class="input-area" style="margin-top:6px;">
-      <div class="free-note">What's on your mind at the moment?</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
+        <div style="flex:1;">
+          <div style="font-size:0.6rem;color:var(--gold);letter-spacing:0.03em;text-transform:uppercase;margin-bottom:2px;">Today's question</div>
+          <div id="main-q" onclick="toggleQuestionEngaged()" style="cursor:pointer;font-family:var(--serif);font-style:italic;font-size:0.92rem;color:var(--brown);line-height:1.35;">Loading...</div>
+          <div class="qc-engaged-lbl" id="q-engaged-lbl" style="display:none;position:static;">✓ Answering this question</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button type="button" class="qc-ctrl-btn" id="q-play-btn" onclick="playMainQuestion()" aria-label="Play question"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+          <button type="button" class="qc-ctrl-btn" onclick="skipQuestion()" aria-label="Try another question"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+        </div>
+      </div>
       <div class="ta-wrap">
         <textarea class="ans-ta" id="ans-ta" placeholder="Your answer…"></textarea>
         <button class="inline-mic" id="mic-btn" onclick="toggleMic()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
@@ -559,43 +611,11 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
       </div>
     </div>
 
-    <button class="more-toggle" id="more-toggle" onclick="toggleMore()">
+    <button class="more-toggle" id="more-toggle" onclick="navTo('prompt')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       Tag it or answer a prompt (optional)
     </button>
-
-    <div class="more-panel" id="more-panel">
-      <div class="prompt-card" style="margin-top:2px;">
-        <div class="mood-lbl">Tag it</div>
-        <div class="tag-row" id="tag-row">
-          <button class="tag-chip" data-tag="Work" onclick="toggleTag('Work',this)">Work</button>
-          <button class="tag-chip" data-tag="Family" onclick="toggleTag('Family',this)">Family</button>
-          <button class="tag-chip" data-tag="Friends" onclick="toggleTag('Friends',this)">Friends</button>
-          <button class="tag-chip" data-tag="Health" onclick="toggleTag('Health',this)">Health</button>
-          <button class="tag-chip" data-tag="Home" onclick="toggleTag('Home',this)">Home</button>
-          <button class="tag-chip" data-tag="Hobbies" onclick="toggleTag('Hobbies',this)">Hobbies</button>
-          <button class="tag-chip" data-tag="Travel" onclick="toggleTag('Travel',this)">Travel</button>
-          <button class="tag-chip" data-tag="Money" onclick="toggleTag('Money',this)">Money</button>
-          <button class="tag-chip" data-tag="Self" onclick="toggleTag('Self',this)">Self</button>
-          <button class="tag-chip" data-tag="Community" onclick="toggleTag('Community',this)">Community</button>
-        </div>
-      </div>
-      <div class="pc-qt-wrap" style="margin-top:4px;">
-        <div class="pc-qt-scroll" id="pc-qt-scroll">
-          <div class="pc-lbl" style="font-size:0.78rem; letter-spacing:0.02em; text-transform:none; opacity:0.9;">You can answer this if you're stuck — totally optional.</div>
-          <div class="pc-qt" id="main-q">Loading...</div>
-          <div class="pc-qt-hint" id="main-q-hint"></div>
-        </div>
-        <div class="pc-qt-track" id="pc-qt-track"><div class="pc-qt-thumb" id="pc-qt-thumb"></div></div>
-        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;align-self:flex-start;">
-          <button class="q-play-btn" id="q-play-btn" onclick="playMainQuestion()" aria-label="Play question" style="width:34px;height:34px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-            <button class="q-play-btn" onclick="skipQuestion()" aria-label="Try another question" style="width:34px;height:34px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
-            <div style="font-size:0.5rem;color:var(--dim);letter-spacing:0.04em;">try another</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="prompt-summary" style="text-align:center;font-size:0.66rem;color:var(--gold);margin-top:4px;"></div>
     <div class="bottom-info">
       <div style="display:flex;justify-content:center;">
         <button class="save-btn" onclick="saveEntry()">Save</button>
@@ -774,15 +794,11 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
       </div>
     </div>
     <div>
-      <div class="sg-label">Your photo</div>
-      <div style="display:flex;align-items:center;gap:14px;background:white;border:1.5px solid var(--cream3);border-radius:11px;padding:12px 14px;">
-        <div style="width:50px;height:50px;border-radius:50%;overflow:hidden;border:1.5px solid var(--taggrey);background:var(--cream2);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="document.getElementById('sfile').click()">
-          <svg id="s-psvg" viewBox="0 0 24 24" stroke-width="1" width="20" height="20" stroke="var(--dim)" fill="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          <img id="s-pimg" src="" style="width:100%;height:100%;object-fit:cover;display:none;">
-        </div>
-        <div><div style="font-size:0.78rem;color:var(--text);">Choose a photo</div><div style="font-size:0.66rem;color:var(--dim);margin-top:2px;">Slowly reveals as your record fills</div></div>
+      <div class="sg-label">Your icon</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button type="button" class="avatar-preview-btn" id="settings-avatar-preview" onclick="openAvatarPicker('settings-avatar-preview')">🙂</button>
+        <div style="font-size:0.68rem;color:var(--dim);">Tap to choose</div>
       </div>
-      <input type="file" id="sfile" accept="image/*" style="display:none" onchange="handleSettingsPhoto(this)">
     </div>
     <div>
       <div class="sg-label">Legal</div>
@@ -887,20 +903,52 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
   <div class="mhead">
     <div class="mbrand">
       <button class="back-btn" onclick="navTo('main')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <svg width="20" height="20" viewBox="0 0 100 100" color="white"><path d="M50 15C25 15 10 30 10 50c0 22 18 35 40 35 18 0 30-11 30-25 0-12-8-20-20-20-10 0-16 7-16 15 0 7 5 11 11 11 5 0 8-3 8-8" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
-      <div class="mlogo" style="font-size:0.8rem;">Innermost</div>
-      <div class="rh" style="font-size:1.05rem;">· Your Record</div>
+      <div class="rh" style="font-size:1.05rem;">Your Record</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
+      <div id="record-avatar" style="font-size:1.1rem;"></div>
       <div class="rc" id="rc"></div>
       <button class="back-btn print-btn" onclick="printRecord()" aria-label="Print report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
     </div>
   </div>
-  <div class="rcov" id="rcov"></div>
   <div class="rscroll" id="rlist"></div>
 </div>
 
 <div class="print-doc" id="print-doc"></div>
+
+<div class="view" id="v-prompt">
+  <div class="mhead">
+    <div class="mbrand">
+      <button class="back-btn" onclick="closePromptScreen()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div class="rh" style="font-size:1.05rem;">Tag it & question category</div>
+    </div>
+  </div>
+  <div class="rscroll" style="padding:16px 18px;">
+    <div style="font-size:0.7rem;color:var(--gold);margin-bottom:16px;">Both optional — do either, neither, or both.</div>
+    <div class="ps-card">
+      <div class="mood-lbl" style="margin-bottom:2px;">Tag it</div>
+      <div class="ps-why">Helps you notice patterns over time.</div>
+      <div class="tag-row" id="tag-row">
+        <button class="tag-chip" data-tag="Work" onclick="toggleTag('Work',this)">Work</button>
+        <button class="tag-chip" data-tag="Family" onclick="toggleTag('Family',this)">Family</button>
+        <button class="tag-chip" data-tag="Friends" onclick="toggleTag('Friends',this)">Friends</button>
+        <button class="tag-chip" data-tag="Health" onclick="toggleTag('Health',this)">Health</button>
+        <button class="tag-chip" data-tag="Home" onclick="toggleTag('Home',this)">Home</button>
+        <button class="tag-chip" data-tag="Hobbies" onclick="toggleTag('Hobbies',this)">Hobbies</button>
+        <button class="tag-chip" data-tag="Travel" onclick="toggleTag('Travel',this)">Travel</button>
+        <button class="tag-chip" data-tag="Money" onclick="toggleTag('Money',this)">Money</button>
+        <button class="tag-chip" data-tag="Self" onclick="toggleTag('Self',this)">Self</button>
+        <button class="tag-chip" data-tag="Community" onclick="toggleTag('Community',this)">Community</button>
+      </div>
+    </div>
+    <div class="ps-card">
+      <div class="mood-lbl" style="margin-bottom:2px;">Question category</div>
+      <div class="ps-why">Choose which theme pulls today's question — shown on the main screen.</div>
+      <div style="font-size:0.62rem;color:var(--dim);margin-bottom:6px;">Pull a question from...</div>
+      <div class="trait-edit-row" id="cat-picker-row" style="margin-bottom:4px;"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ASK -->
 <div class="view" id="v-ask">
@@ -929,7 +977,7 @@ html,body{height:100%;width:100%;background:#000;font-family:var(--sans);font-we
 const SK='im8';
 let privacyFrom='v-ob-name';
 let termsFrom='v-ob-name';
-let S=JSON.parse(localStorage.getItem(SK)||'null')||{onboarded:false,name:null,voice:'warm',voiceEnabled:false,time:'evening',channel:null,email:null,phone:null,photo:null,photoY:50,entries:[],coverage:{},todayDate:'',todayQ:null,todayCat:null,skipped:[],mood:null,difficultyFilter:null,askHistory:[],pushEnabled:false,pushId:null};
+let S=JSON.parse(localStorage.getItem(SK)||'null')||{onboarded:false,name:null,avatar:null,voice:'warm',voiceEnabled:false,time:'evening',channel:null,email:null,phone:null,photo:null,photoY:50,entries:[],coverage:{},todayDate:'',todayQ:null,todayCat:null,skipped:[],mood:null,difficultyFilter:null,askHistory:[],pushEnabled:false,pushId:null};
 if(!Array.isArray(S.askHistory))S.askHistory=[];
 if(!S.pushId)S.pushId=(crypto.randomUUID?crypto.randomUUID():('px-'+Date.now()+'-'+Math.random().toString(36).slice(2)));
 const sv=()=>localStorage.setItem(SK,JSON.stringify(S));
@@ -1089,6 +1137,7 @@ function goTo(id){
   if(id==='v-ob-name'){
     const inp=document.getElementById('name-input');
     if(inp)setTimeout(()=>inp.focus(),300);
+    syncAvatarInput('ob-avatar-preview');
   }
 }
 
@@ -1102,7 +1151,7 @@ function pickVoice(v){
 function playMainQuestion(){
   if(!window.speechSynthesis||!S.todayQ)return;
   if(S.voiceEnabled===false)return;
-  if(!document.getElementById('more-panel').classList.contains('open'))return;
+  if(!document.getElementById('v-main').classList.contains('show'))return;
   window.speechSynthesis.cancel();
   const btn=document.getElementById('q-play-btn');
   setTimeout(()=>{
@@ -1181,7 +1230,31 @@ function finishSimpleOnboarding(){
 }
 
 // SETTINGS
+const CAT_LABELS={'Right Now':'How things feel today','The Quiet Good':'Small good moments','Being Exactly Yourself':'What makes you, you','The World Outside You':'The world around you','Other People':'People in your life','Looking Back':'Looking back on your life'};
 const VOICE_LABELS={warm:'Warm & slow',clear:'Clear & direct',soft:'Soft & considered'};
+const EMOJI_GRID=['😊','😌','🥰','😎','🤗','😇','🙂','😄','🌙','☀️','🌊','🌿','🍃','🌸','🌾','🔥','⭐','🌈','☁️','❄️','🐢','🦋','🦊','🐼','🐧','🦉','🐝','🐬','🐙','🌵','🍀','🍂','🌻','🪷','🎈','🎨','📚','☕','🎵','⚡','💎','🔮','🪐'];
+let avatarPreviewTarget=null;
+function syncAvatarInput(previewId){
+  const el=document.getElementById(previewId);
+  if(el)el.textContent=S.avatar||'🙂';
+}
+function openAvatarPicker(previewId){
+  avatarPreviewTarget=previewId;
+  const grid=document.getElementById('emoji-grid');
+  grid.innerHTML=EMOJI_GRID.map(e=>`<button type="button" class="emoji-cell${S.avatar===e?' on':''}" onclick="selectAvatar('${e}')">${e}</button>`).join('');
+  document.getElementById('emoji-overlay').classList.add('show');
+  document.getElementById('emoji-panel').classList.add('show');
+}
+function closeAvatarPicker(){
+  document.getElementById('emoji-overlay').classList.remove('show');
+  document.getElementById('emoji-panel').classList.remove('show');
+}
+function selectAvatar(e){
+  S.avatar=e;sv();
+  if(avatarPreviewTarget)syncAvatarInput(avatarPreviewTarget);
+  refreshMain();
+  closeAvatarPicker();
+}
 const TIME_LABELS={morning:'Morning',afternoon:'Afternoon',evening:'Evening',night:'Night'};
 const DIFF_LABELS={easy:'Easy',normal:'Normal',hard:'Hard'};
 function toggleVoiceEnabled(){
@@ -1224,6 +1297,7 @@ function openSettings(){
   syncVoiceToggle();
   syncPushToggle();
   syncTimeChips();
+  syncAvatarInput('settings-avatar-preview');
   document.getElementById('sd-val').textContent=S.difficultyFilter?DIFF_LABELS[S.difficultyFilter]:'Auto';
   if(S.photo){
     const i=document.getElementById('s-pimg');const s=document.getElementById('s-psvg');
@@ -1423,12 +1497,12 @@ function qDifficulty(cat,q){
   return found?found[1]:'normal';
 }
 // QUESTION
-function pickToday(){
+function pickToday(forceCat){
   const today=new Date().toDateString();
-  if(S.todayDate===today&&S.todayQ)return;
+  if(!forceCat&&S.todayDate===today&&S.todayQ)return;
   const n=S.entries.length;const md=n<5?1:n<20?2:3;
   const el=CATS.filter(c=>DEPTH[c]<=md);
-  const cat=el.reduce((a,b)=>(S.coverage[a]||0)<=(S.coverage[b]||0)?a:b);
+  const cat=forceCat||el.reduce((a,b)=>(S.coverage[a]||0)<=(S.coverage[b]||0)?a:b);
   const ans=S.entries.filter(e=>e.cat===cat).map(e=>e.q);
   let pool=QS[cat].filter(q=>!ans.includes(q)&&!S.skipped.includes(q));
   let fallPool=QS[cat].filter(q=>!ans.includes(q));
@@ -1439,7 +1513,7 @@ function pickToday(){
     if(dFallPool.length)fallPool=dFallPool;
   }
   let use=pool.length?pool:fallPool.length?fallPool:null;
-  if(!use){
+  if(!use&&!forceCat){
     // this category fully answered — look across all eligible categories for any unanswered question
     for(const c of el){
       const ans2=S.entries.filter(e=>e.cat===c).map(e=>e.q);
@@ -1448,9 +1522,24 @@ function pickToday(){
     }
   }
   if(!use)use=QS[cat]; // every question in every eligible category answered — only remaining option is a repeat
-  if(!S.todayCat||use===pool||use===fallPool)S.todayCat=cat;
+  if(forceCat||!S.todayCat||use===pool||use===fallPool)S.todayCat=cat;
   const q=use[Math.floor(Math.random()*use.length)];
   S.todayQ=q;S.todayDate=today;sv();
+  questionEngaged=false;
+  renderQuestionEngagedUI();
+}
+function pickCategoryManually(cat){
+  pickToday(cat);
+  renderMainQuestion();
+  syncCatPickerChips();
+}
+function syncCatPickerChips(){
+  const row=document.getElementById('cat-picker-row');
+  if(!row)return;
+  row.innerHTML=CATS.map(c=>{
+    const on=S.todayCat===c;
+    return `<button type="button" class="rcov-chip trait-edit-chip${on?' on':''}" style="font-size:0.62rem;padding:5px 9px;" onclick="pickCategoryManually('${c}')">${on?'<span class="rcov-tick">✓</span>':''}${esc(CAT_LABELS[c]||c)}</button>`;
+  }).join('');
 }
 function updateQTrack(){
   const box=document.getElementById('pc-qt-scroll');
@@ -1478,8 +1567,7 @@ function skipQuestion(){
   if(S.todayQ&&!S.skipped.includes(S.todayQ))S.skipped.push(S.todayQ);
   S.todayQ=null;S.todayDate='';sv();
   pickToday();
-  document.getElementById('main-q').textContent=S.todayQ||'';renderQHint();
-  setTimeout(updateQTrack,30);
+  renderMainQuestion();
   if(S.todayQ&&S.todayQ!==lastSpokenQ){lastSpokenQ=S.todayQ;setTimeout(playMainQuestion,300);}
 }
 
@@ -1544,12 +1632,44 @@ function dismissForgotten(ev){
   if(slot)slot.innerHTML='';
 }
 
+function renderMainQuestion(){
+  const el=document.getElementById('main-q');
+  if(el)el.textContent=S.todayQ||'';
+  renderQuestionEngagedUI();
+}
+function renderMainQuote(){
+  const slot=document.getElementById('main-quote-slot');
+  if(!slot)return;
+  const withText=S.entries.filter(e=>e.a&&e.a.trim());
+  if(!withText.length){slot.innerHTML='';return;}
+  const pick=withText[Math.floor(Math.random()*withText.length)];
+  let text=pick.a.trim();
+  if(text.length>110)text=text.slice(0,107)+'…';
+  slot.innerHTML=`<div class="quote-cloud-wrap">
+    <div class="quote-cloud">
+      <div class="qc-bump qc-bump1"></div>
+      <div class="qc-bump qc-bump2"></div>
+      <div class="qc-bump qc-bump3"></div>
+      <div class="qc-bump qc-bump4"></div>
+      <div class="qc-bump qc-bump5"></div>
+      <div class="qc-rect">
+        <div class="qc-label">☁️ In your own words</div>
+        <div class="qc-text">"${esc(text)}"</div>
+      </div>
+    </div>
+    <div class="qc-dot qc-dot1"></div>
+    <div class="qc-dot qc-dot2"></div>
+    <div class="qc-dot qc-dot3"></div>
+  </div>`;
+}
 function refreshMain(){
   pickToday();
   const greetEl=document.getElementById('main-greeting');
-  if(greetEl)greetEl.textContent=S.name?`Hi ${S.name}, let's get started.`:`Let's get started.`;
-  document.getElementById('main-q').textContent=S.todayQ||'';renderQHint();
-  setTimeout(updateQTrack,30);
+  const avatarPrefix=S.avatar?`${S.avatar} `:'';
+  if(greetEl)greetEl.textContent=S.name?`${avatarPrefix}Hi ${S.name}, let's get started.`:`${avatarPrefix}Let's get started.`;
+  renderMainQuote();
+  renderMainQuestion();
+  syncPromptSummary();
   if(S.todayQ&&S.todayQ!==lastSpokenQ){lastSpokenQ=S.todayQ;setTimeout(playMainQuestion,400);}
   const n=S.entries.length;
   const pct=Math.min(100,Math.round(n/TARGET*100));
@@ -1559,16 +1679,8 @@ function refreshMain(){
   if(screenFill)screenFill.style.height=pct+'%';
   const screenFillImg=document.getElementById('screen-fill-img');
   if(screenFillImg&&screenFill){
-    if(S.photo){
-      const fullH=document.querySelector('.mbody').clientHeight;
-      screenFillImg.src=S.photo;
-      screenFillImg.style.height=fullH+'px';
-      screenFillImg.style.display='block';
-      screenFill.style.background='transparent';
-    } else {
-      screenFillImg.style.display='none';
-      screenFill.style.background='linear-gradient(to top, rgba(138,132,120,0.16), rgba(138,132,120,0.05))';
-    }
+    screenFillImg.style.display='none';
+    screenFill.style.background='linear-gradient(to top, rgba(138,132,120,0.16), rgba(138,132,120,0.05))';
   }
   const jarFill=document.getElementById('jar-fill-rect');
   if(jarFill){
@@ -1602,6 +1714,17 @@ function refreshMain(){
 
 // TAGS (optional, multi-select toggle)
 let selectedTags=[];
+let questionEngaged=false;
+function toggleQuestionEngaged(){
+  questionEngaged=!questionEngaged;
+  renderQuestionEngagedUI();
+}
+function renderQuestionEngagedUI(){
+  const card=document.getElementById('main-q');
+  const lbl=document.getElementById('q-engaged-lbl');
+  if(card)card.style.fontWeight=questionEngaged?'600':'normal';
+  if(lbl)lbl.style.display=questionEngaged?'block':'none';
+}
 function toggleTag(tag,btn){
   const idx=selectedTags.indexOf(tag);
   if(idx===-1){selectedTags.push(tag);btn.classList.add('on');}
@@ -1612,6 +1735,7 @@ function toggleMore(){
   const btn=document.getElementById('more-toggle');
   panel.classList.toggle('open');
   btn.classList.toggle('open');
+  if(panel.classList.contains('open'))syncCatPickerChips();
 }
 
 // MOOD
@@ -1719,8 +1843,12 @@ function doSaveEntry(){
   }
   if(recState&&recog)recog.stop();
   const savedEntryId=Date.now();
-  S.entries.unshift({id:savedEntryId,date:new Date().toISOString(),q:S.todayQ,cat:S.todayCat,a:text,mood:S.mood,tags:selectedTags.slice(),trait:null});
-  S.coverage[S.todayCat]=(S.coverage[S.todayCat]||0)+1;sv();
+  const usedQ=questionEngaged?S.todayQ:null;
+  const usedCat=questionEngaged?S.todayCat:null;
+  S.entries.unshift({id:savedEntryId,date:new Date().toISOString(),q:usedQ,cat:usedCat,a:text,mood:S.mood,tags:selectedTags.slice(),trait:null});
+  if(usedCat)S.coverage[usedCat]=(S.coverage[usedCat]||0)+1;
+  questionEngaged=false;
+  sv();
   document.getElementById('ans-ta').value='';
   document.getElementById('mic-btn').innerHTML=MIC_SVG;
   document.getElementById('mic-lbl').textContent='';
@@ -1908,7 +2036,7 @@ function buildPrintDoc(){
   </div>`;
 
   // summary page -- real counts here, this is a personal keepsake, not an Ask Innermost answer
-  const covCounts=CATS.map(c=>({name:c,n:entries.filter(e=>e.cat===c).length}));
+  const covCounts=CATS.map(c=>({name:CAT_LABELS[c]||c,n:entries.filter(e=>e.cat===c).length}));
   const withQuote=sorted.filter(e=>e.a&&e.a.length<200);
   const epigraph=withQuote.length?withQuote[Math.floor(Math.random()*withQuote.length)]:sorted[0];
   html+=`<div class="pd-summary-page">
@@ -1921,8 +2049,25 @@ function buildPrintDoc(){
   for(const cat of CATS){
     const inCat=sorted.filter(e=>e.cat===cat);
     if(!inCat.length)continue;
-    html+=`<div class="pd-cat-section"><div class="pd-cat-h">${esc(cat)}</div>`;
+    html+=`<div class="pd-cat-section"><div class="pd-cat-h">${esc(CAT_LABELS[cat]||cat)}</div>`;
     for(const e of inCat){
+      const d=new Date(e.date);
+      const metaParts=[];
+      if(e.mood)metaParts.push(e.mood);
+      if(e.trait)metaParts.push(e.trait);
+      if(e.tags&&e.tags.length)metaParts.push(e.tags.join(', '));
+      html+=`<div class="pd-entry">
+        <div class="pd-entry-date">${fmt(d)}</div>
+        <div class="pd-entry-text">${esc(e.a)}</div>
+        ${metaParts.length?`<div class="pd-entry-meta">${esc(metaParts.join(' · '))}</div>`:''}
+      </div>`;
+    }
+    html+='</div>';
+  }
+  const uncategorized=sorted.filter(e=>!e.cat);
+  if(uncategorized.length){
+    html+=`<div class="pd-cat-section"><div class="pd-cat-h">In your own words</div>`;
+    for(const e of uncategorized){
       const d=new Date(e.date);
       const metaParts=[];
       if(e.mood)metaParts.push(e.mood);
@@ -1942,6 +2087,8 @@ function buildPrintDoc(){
 function openRecord(){
   const entries=S.entries;
   renderCoverage();
+  const avEl=document.getElementById('record-avatar');
+  if(avEl)avEl.textContent=S.avatar||'';
   document.getElementById('rc').textContent=entries.length===1?'1 entry':`${entries.length} entries`;
   const list=document.getElementById('rlist');
   if(!entries.length){list.innerHTML='<div class="rempty">Your record will build here,<br>one entry at a time.</div>';return;}
@@ -1958,9 +2105,10 @@ function openRecord(){
     const dl=d.toLocaleDateString('en-NZ',{weekday:'long',day:'numeric',month:'long'});
     const tl=d.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'});
     const mi=e.mood&&MOOD_ICONS[e.mood]?MOOD_ICONS[e.mood]:'';
+    const moodLabel=e.mood?e.mood.charAt(0).toUpperCase()+e.mood.slice(1):'';
     const traitHtml=e.trait?`<span class="ri-trait">${esc(e.trait)}</span>`:'';
     const tagsHtml=(e.tags&&e.tags.length)||traitHtml?`<div class="ri-tags">${traitHtml}${(e.tags||[]).map(t=>`<span class="ri-tag">${esc(t)}</span>`).join('')}</div>`:'';
-    html+=`<div class="ri" id="entry-${Number(e.id)}"><div class="ri-top"><div class="rd">${dl} · ${tl}</div>${mi?`<div class="ri-mood">${mi}</div>`:''}</div>
+    html+=`<div class="ri" id="entry-${Number(e.id)}"><div class="ri-top"><div class="rd">${dl} · ${tl}${e.cat?` · <span style="color:var(--gold);">${esc(CAT_LABELS[e.cat]||e.cat)}</span>`:''}</div>${mi?`<div class="ri-mood" style="display:flex;align-items:center;gap:4px;"><span>${mi}</span><span style="font-size:0.66rem;color:var(--taggrey);">${esc(moodLabel)}</span></div>`:''}</div>
       <div class="ra" id="ra-${Number(e.id)}">${esc(e.a)}</div>${tagsHtml}
       <div class="ri-actions">
         <button class="ri-action-btn" onclick="startEditEntry(${Number(e.id)})">Edit</button>
@@ -2041,10 +2189,11 @@ function removeDots(id){const e=document.getElementById(id);e&&e.remove();}
 
 // NAV
 function navTo(dest){
-  const map={'main':'v-main','report':'v-record','ask':'v-ask'};
+  const map={'main':'v-main','report':'v-record','ask':'v-ask','prompt':'v-prompt'};
   goTo(map[dest]||'v-main');
   if(dest==='report')openRecord();
   if(dest==='main')refreshMain();
+  if(dest==='prompt')openPromptScreen();
   if(dest==='ask'){
     // real Ask always has the input and a clean thread; preview mode
     // (showAskPreview) hides the input and paints its own bubbles after this.
@@ -2054,6 +2203,24 @@ function navTo(dest){
     if(th)th.innerHTML='<div class="akintro">Ask anything. What you find here comes entirely from what you have already said.</div>';
     askMsgs=[];
   }
+}
+function openPromptScreen(){
+  syncCatPickerChips();
+  document.querySelectorAll('#v-prompt .tag-chip').forEach(b=>{
+    b.classList.toggle('on',selectedTags.includes(b.dataset.tag));
+  });
+}
+function closePromptScreen(){
+  navTo('main');
+  syncPromptSummary();
+}
+function syncPromptSummary(){
+  const el=document.getElementById('prompt-summary');
+  if(!el)return;
+  const parts=[];
+  if(selectedTags.length)parts.push(`${selectedTags.length} tag${selectedTags.length>1?'s':''}`);
+  if(questionEngaged)parts.push('answering a question');
+  el.textContent=parts.length?parts.join(' · '):'';
 }
 
 // INIT
